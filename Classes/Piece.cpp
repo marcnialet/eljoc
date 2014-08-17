@@ -8,103 +8,60 @@
 
 #include "Piece.h"
 
+Piece* Piece::create(const int tileType, int indexPosition, int row, int column)
+{
+    std::string filename;
+    switch (tileType)
+    {
+        case 0:
+            filename="blue_tile.png";
+            break;
+        case 1:
+            filename="green_tile.png";
+            break;
+        case 2:
+            filename="red_tile.png";
+            break;
+        case 3:
+            filename="yellow_tile.png";
+            break;
+            
+        default:
+            break;
+    }    
+    
+    Piece * piece = Piece::create(filename);
+    if(piece!= NULL)
+    {
+        piece->tileType =tileType;
+        piece->indexPosition =indexPosition;
+        piece->row = row;
+        piece->column = column;
+    }
+    return piece;
+}
+
 Piece* Piece::create(const std::string &filename)
 {
-    Piece *pRet = new Piece();
-    if (pRet && pRet->init(filename))
+    Piece *piece = new Piece();
+    if (piece && piece->init(filename))
     {
-        pRet->autorelease();
+        piece->filename = filename;
+        piece->autorelease();
     }
     else
     {
-        delete pRet;
-        pRet = NULL;
+        delete piece;
+        piece = NULL;
     }
-    return pRet;
+    return piece;
     
 }
-
 
 bool Piece::init(const std::string &filename)
 {
     if (!Sprite::initWithFile(filename)) {
         return false;
     }
-    
-    listener = EventListenerTouchOneByOne::create();
-    
-    listener->onTouchBegan = CC_CALLBACK_2(Piece::onTouchBegan, this);
-    listener->onTouchMoved = CC_CALLBACK_2(Piece::onTouchMoved, this);
-    listener->onTouchEnded = CC_CALLBACK_2(Piece::onTouchEnded, this);
-    // listener->onTouchCancelled = CC_CALLBACK_2(Piece::onTouchCancel, this);
-    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
-    
     return true;
-}
-
-void Piece::setTargetPosition(Vec2 targetPosition)
-{
-    this->_targetPosition = targetPosition;
-}
-
-bool Piece::onTouchBegan(cocos2d::Touch *touch, cocos2d::Event *event)
-{
-    if (this->getBoundingBox().containsPoint(touch->getLocation()))
-    {
-        this->listener->setSwallowTouches(true);
-        this->setActived(true);
-    }
-    else
-    {
-        this->listener->setSwallowTouches(false);
-    }
-    
-    return true;
-}
-
-void Piece::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *event)
-{
-    this->setActived(false);
-    this->currentLocationSuccess();
-}
-
-void Piece::onTouchMoved(cocos2d::Touch *touch, cocos2d::Event *event)
-{
-    if (this->_actived)
-    {
-        this->setPosition(Vec2(this->getPositionX()+touch->getDelta().x, this->getPositionY()+touch->getDelta().y));
-    }
-}
-
-void Piece::setActived(bool active)
-{
-    _actived = active;
-    Action *scale;
-    if (_actived)
-    {
-        scale = ScaleTo::create(0.2, 1.1);
-    }
-    else
-    {
-        scale = ScaleTo::create(0.2, 1);
-    }
-    this->runAction(scale);
-}
-
-bool Piece::currentLocationSuccess()
-{
-    Vec2 currentPosition = this->getPosition();
-    int deltaX, deltaY;
-    deltaX = _targetPosition.x - currentPosition.x;
-    deltaY = _targetPosition.y - currentPosition.y;
-    
-    // Current piece is inside the desired range.
-    if ((abs(deltaX) < LOCATION_ACCURACY)&&(abs(deltaY) < LOCATION_ACCURACY))
-    {
-        Action* moveToTargetPosition = MoveTo::create(0.2, _targetPosition);
-        this->runAction(moveToTargetPosition);
-        std::cout << "pieze is now in the correct place";
-        return true;
-    }
-    return false;
 }

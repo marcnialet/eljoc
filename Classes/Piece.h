@@ -21,24 +21,25 @@ class Piece: public Sprite
     bool _actived;
     Vec2 _targetPosition;
     
-    void setActived(bool active);
+    void setActived(bool active);    
     
-    EventListenerTouchOneByOne *listener;
+    
+    std::string filename;
+    int tileType;
+    int indexPosition;
+    int row;
+    int column;
     
 public:
     
     // Constructor
+    static Piece* create(const int tileType, int indexPosition, int row, int column);
     static Piece* create(const std::string &filename);
     virtual bool init(const std::string &filename);
     
-    void setTargetPosition(Vec2 targetPosition);
-    bool currentLocationSuccess();
-    
-    bool onTouchBegan(Touch*, Event*);
-    void onTouchMoved(Touch*, Event*);
-    void onTouchEnded(Touch*, Event*);
-    //void onTouchCancel(Touch*, Event*);
-
+    void setRowColumn(int r, int c) { this->row=r; this->column=c; }
+    int getRow() { return this->row; }
+    int getColumn() { return this->column; }
 };
 
 #endif /* defined(__eljoc__Piece__) */
