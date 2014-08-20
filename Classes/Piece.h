@@ -15,6 +15,8 @@
 #include "cocos2d.h"
 #include "PieceData.h"
 
+using namespace std;
+
 USING_NS_CC;
 
 
@@ -23,12 +25,21 @@ class Piece: public Sprite
 {
     std::string filename;
     PieceData* data;
+    vector<Piece *> neighbours;
+   
+    
     EventListenerTouchOneByOne *listener;
     bool _actived;
     static std::string getFileNameFromType(int tileType);
     void setActived(bool active);
     
 public:
+    void clearNeighbours();
+    void addNeighbour(Piece* piece);
+    bool hasNeighbours();
+    vector<Piece *> getNeighbours() { return this->neighbours; }
+    
+    
     void setRowColumn(int r, int c) { this->data->setRowColumn(r,c); this->setPosition(this->data->getPosition());}
     void setIndexPosition(int i) { this->data->setIndexPosition(i); }
     

@@ -8,6 +8,20 @@
 
 using namespace std;
 
+enum GestureType
+{
+    None = 0,
+    Swipe_Left = 1,
+    Swipe_Right = 2,
+    Swipe_Up = 3,
+    Swipe_Down = 4,
+    
+    Swipe_Left_Multi = 5,
+    Swipe_Right_Multi = 6,
+    Swipe_Up_Multi = 7,
+    Swipe_Down_Multi = 8
+};
+
 
 class GamePlay : public cocos2d::LayerColor
 {
@@ -24,18 +38,25 @@ private:
     double start;
     double end;
     
-    EventListenerTouchOneByOne *listener;
+    EventListenerTouchAllAtOnce *listener;
     
     cocos2d::Size visibleSize;
     
     bool isTouchDown;
-    
-    float initialTouchPos[2];
-    float currentTouchPos[2];
+    vector<Point> initialTouchPos;
+    vector<Point> currentTouchPos;
     
     std::vector<Piece*> getPiecesByRow(int row);
     std::vector<Piece*> getPiecesByColumn(int column);
     void swapPositions(int oldindex, int newindex);
+    void setNeighbours();
+    void setPieceNeighbours(Piece* piece, vector<Piece *> );
+    void findChains();
+    void findChildChain(vector<Piece *>& list, Piece* piece, vector<Piece *>& pieces);
+    
+    Piece* getPieceByRowColumn(vector<Piece *> pieces, int row, int column);
+    
+    GestureType GetGestureType(vector<int>& rowcols);
 
 public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
@@ -44,10 +65,11 @@ public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();
     
-    bool onTouchBegan(Touch*, Event*);
-    void onTouchMoved(Touch*, Event*);
-    void onTouchEnded(Touch*, Event*);
-    void onTouchCancelled(Touch*, Event*);
+    void onTouchesBegan(const vector<Touch*>& touches, Event* event);
+    void onTouchesMoved(const vector<Touch*>& touches, Event* event);
+    void onTouchesEnded(const vector<Touch*>& touches, Event* event);
+    void onTouchesCancelled(const vector<Touch*>& touches, Event* event);
+    
     
     // implement the "static create()" method manually
     CREATE_FUNC(GamePlay);

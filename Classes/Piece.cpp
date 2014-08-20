@@ -93,6 +93,29 @@ void Piece::setActived(bool active)
     }
     this->runAction(scale);
 }
+
+void Piece::clearNeighbours()
+{
+    this->neighbours.clear();
+}
+void Piece::addNeighbour(Piece* piece)
+{
+    for (auto &p: this->neighbours)
+    {
+        if(p==piece)
+        {
+            return;
+        }
+    }
+    this->neighbours.push_back(piece);
+}
+bool Piece::hasNeighbours()
+{
+    if(this->neighbours.size()>0) return true;
+    
+    return false;
+    
+}
 std::string Piece::getFileNameFromType(int tileType)
 {
     std::string filename;

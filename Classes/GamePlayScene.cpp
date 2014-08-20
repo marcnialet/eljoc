@@ -33,20 +33,19 @@ bool GamePlay::init()
     // Vec2 origin = Director::getInstance()->getVisibleOrigin();
     
     visibleSize = Director::getInstance()->getVisibleSize();
-    
-    listener = EventListenerTouchOneByOne::create();
-    
-    listener->onTouchBegan = CC_CALLBACK_2(GamePlay::onTouchBegan, this);
-    listener->onTouchMoved = CC_CALLBACK_2(GamePlay::onTouchMoved, this);
-    listener->onTouchEnded = CC_CALLBACK_2(GamePlay::onTouchEnded, this);
-    listener->onTouchCancelled = CC_CALLBACK_2(GamePlay::onTouchCancelled, this);
-    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
+    
+    this->listener = EventListenerTouchAllAtOnce::create();
+    
+    listener->onTouchesBegan = CC_CALLBACK_2(GamePlay::onTouchesBegan, this);
+    listener->onTouchesMoved = CC_CALLBACK_2(GamePlay::onTouchesMoved, this);
+    listener->onTouchesEnded = CC_CALLBACK_2(GamePlay::onTouchesEnded, this);
+    listener->onTouchesCancelled = CC_CALLBACK_2(GamePlay::onTouchesCancelled, this);
+    auto dispatcher = this->getEventDispatcher();
+    dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+    
+    
     isTouchDown = false;
-    
-    initialTouchPos[0] = 0;
-    initialTouchPos[1] = 0;
-    
     
     this->start = 0;
     this->end = 0;
@@ -57,36 +56,135 @@ bool GamePlay::init()
     
     return true;
 }
-bool GamePlay::onTouchBegan(Touch *touch, Event *event)
+void GamePlay::onTouchesBegan(const vector<Touch*>& touches, Event* event)
 {
-    // log("onTouchBegan");
-    initialTouchPos[0] = touch->getLocation().x;
-    initialTouchPos[1] = touch->getLocation().y;
-    currentTouchPos[0] = touch->getLocation().x;
-    currentTouchPos[1] = touch->getLocation().y;
+    // log("onTouchesBegan");
+    this->initialTouchPos.clear();
+    this->currentTouchPos.clear();
     
-    isTouchDown = true;
-    
-    return true;
+    for (auto &touch: touches)
+    {
+        isTouchDown = true;
+        this->initialTouchPos.push_back(touch->getLocation());
+        this->currentTouchPos.push_back(touch->getLocation());
+    }
 }
-
-void GamePlay::onTouchMoved(Touch *touch, Event *event)
+void GamePlay::onTouchesMoved(const vector<Touch*>& touches, Event* event)
 {
-    // log("onTouchMoved");
-    currentTouchPos[0] = touch->getLocation().x;
-    currentTouchPos[1] = touch->getLocation().y;
+    // log("onTouchesMoved");
+    this->currentTouchPos.clear();    
+    for (auto &touch: touches)
+    {
+        this->currentTouchPos.push_back(touch->getLocation());
+    }
 }
-
-void GamePlay::onTouchEnded(Touch *touch, Event *event)
+void GamePlay::onTouchesEnded(const vector<Touch*>& touches, Event* event)
 {
-    // log("onTouchEnded");
+    // log("onTouchesEnded");
     isTouchDown = false;
+    this->initialTouchPos.clear();
+}
+void GamePlay::onTouchesCancelled(const vector<Touch*>& touches, Event* event)
+{
+    // log("onTouchesCancelled");
 }
 
-void GamePlay::onTouchCancelled(Touch *touch, Event *event)
+GestureType GamePlay::GetGestureType(vector<int>& rowcols)
 {
-    // log("onTouchCancelled");
-    onTouchEnded(touch, event);
+    GestureType gesture = GestureType::None;
+    
+    bool single = currentTouchPos.size()==1 && currentTouchPos.size()==1;
+    bool multiple = currentTouchPos.size()>1 && currentTouchPos.size()>1;
+    if(single||multiple)
+    {
+        if (initialTouchPos[0].x - currentTouchPos[0].x > visibleSize.width * 0.05)
+        {
+            int initY = initialTouchPos[0].y;
+            if(initY>150&&initY<750)
+            {
+                if(multiple)
+                {
+                    gesture = GestureType::Swipe_Left_Multi;
+                    for(int i=0; i<10; i++) rowcols.push_back(i);
+                    // log("SWIPED LEFT MULTIPLE");
+                }
+                else
+                {
+                    int rowcol = (initY - 150) / 60;
+                    rowcols.push_back(rowcol);
+                    gesture = GestureType::Swipe_Left;
+                    // log("SWIPED LEFT in row: %d", rowcol);
+                }
+            }
+        }
+        else if (initialTouchPos[0].x - currentTouchPos[0].x < - visibleSize.width * 0.05)
+        {
+            int initY = initialTouchPos[0].y;
+            if(initY>150&&initY<750)
+            {
+                
+                if(multiple)
+                {
+                    gesture = GestureType::Swipe_Right_Multi;
+                    for(int i=0; i<10; i++) rowcols.push_back(i);
+                    // log("SWIPED RIGHT MULTIPLE");
+                }
+                else
+                {
+                    int rowcol = (initY - 150) / 60;
+                    rowcols.push_back(rowcol);
+                    gesture = GestureType::Swipe_Right;
+                    // log("SWIPED RIGHT in row: %d", rowcol);
+                }
+            }
+        }
+        
+        else if (initialTouchPos[0].y - currentTouchPos[0].y > visibleSize.width * 0.05)
+        {
+            int initX = initialTouchPos[0].x;
+            if(initX>20&&initX<620)
+            {
+                
+                if(multiple)
+                {
+                    gesture = GestureType::Swipe_Down_Multi;
+                    for(int i=0; i<10; i++) rowcols.push_back(i);
+                    // log("SWIPED DOWN MULTIPLE");
+                }
+                else
+                {
+                    int rowcol = (initX - 20) / 60;
+                    rowcols.push_back(rowcol);
+                    gesture = GestureType::Swipe_Down;
+                    // log("SWIPED DOWN in col: %d", rowcol);
+                }
+            }
+        }
+        else if (initialTouchPos[0].y - currentTouchPos[0].y < - visibleSize.width * 0.05)
+        {
+            int initX = initialTouchPos[0].x;
+            if(initX>20&&initX<620)
+            {
+                
+                if(multiple)
+                {
+                    gesture = GestureType::Swipe_Up_Multi;
+                    for(int i=0; i<10; i++) rowcols.push_back(i);
+                    // log("SWIPED UP MULTIPLE");
+                }
+                else
+                {
+                    int rowcol = (initX - 20) / 60;
+                    rowcols.push_back(rowcol);
+                    gesture = GestureType::Swipe_Up;
+                    // log("SWIPED UP in col: %d", rowcol);
+                }
+            }
+        }
+    }
+    
+    return gesture;
+    
 }
 
 void GamePlay::update(float dt)
@@ -97,7 +195,7 @@ void GamePlay::update(float dt)
     }
     this->end = this->getTimeTick();
     double delay = this->end - this->start;
-    if(delay>8000)
+    if(delay>4000)
     {
         start = 0;
         end = 0;
@@ -110,24 +208,21 @@ void GamePlay::update(float dt)
             std::vector<int>::iterator it = this->vectorOfPositions.begin();
             this->vectorOfPositions.erase(it);
             this->addChild(piece);
-        }
-        else
-        {
-            //this->removeAllChildren();
-            //for (int i=0; i<100; ++i) this->vectorOfPositions.push_back(i);
+            
+            this->setPieceNeighbours(piece, this->mapOfPieces);
         }
     }
     
     if (true == isTouchDown)
     {
-        if (initialTouchPos[0] - currentTouchPos[0] > visibleSize.width * 0.05)
+        vector<int> rowcols;
+        GestureType gesture = GetGestureType(rowcols);
+        
+        if (gesture==GestureType::Swipe_Left || gesture==GestureType::Swipe_Left_Multi)
         {
-            int initY = initialTouchPos[1];
-            if(initY>150&&initY<750)
+            for (auto &rowcol: rowcols)
             {
-                int row = (initY - 150) / 60;
-                log("SWIPED LEFT in row: %d", row);
-                std::vector<Piece*> pieces = this->getPiecesByRow(row);
+                std::vector<Piece*> pieces = this->getPiecesByRow(rowcol);
                 if(pieces.size()>0)
                 {
                     std::sort (pieces.begin(), pieces.end(), sort_bycolumn);
@@ -142,16 +237,16 @@ void GamePlay::update(float dt)
                     }
                 }
             }
+            this->setNeighbours();
+            this->initialTouchPos.clear();
+            this->currentTouchPos.clear();
             isTouchDown = false;
         }
-        else if (initialTouchPos[0] - currentTouchPos[0] < - visibleSize.width * 0.05)
+        else if (gesture==GestureType::Swipe_Right || gesture==GestureType::Swipe_Right_Multi)
         {
-            int initY = initialTouchPos[1];
-            if(initY>150&&initY<750)
+            for (auto &rowcol: rowcols)
             {
-                int row = (initY - 150) / 60;
-                log("SWIPED RIGHT in row: %d", row);
-                std::vector<Piece*> pieces = this->getPiecesByRow(row);
+                std::vector<Piece*> pieces = this->getPiecesByRow(rowcol);
                 if(pieces.size()>0)
                 {
                     std::sort (pieces.begin(), pieces.end(), sort_bycolumn_rev);
@@ -166,16 +261,16 @@ void GamePlay::update(float dt)
                     }
                 }
             }
+            this->setNeighbours();
+            this->initialTouchPos.clear();
+            this->currentTouchPos.clear();
             isTouchDown = false;
         }
-        else if (initialTouchPos[1] - currentTouchPos[1] > visibleSize.width * 0.05)
+        else if (gesture==GestureType::Swipe_Down || gesture==GestureType::Swipe_Down_Multi)
         {
-            int initX = initialTouchPos[0];
-            if(initX>20&&initX<620)
+            for (auto &rowcol: rowcols)
             {
-                int col = (initX - 20) / 60;
-                log("SWIPED DOWN in col: %d", col);
-                std::vector<Piece*> pieces = this->getPiecesByColumn(col);
+                std::vector<Piece*> pieces = this->getPiecesByColumn(rowcol);
                 if(pieces.size()>0)
                 {
                     std::sort (pieces.begin(), pieces.end(), sort_byrow);
@@ -190,16 +285,16 @@ void GamePlay::update(float dt)
                     }
                 }
             }
+            this->setNeighbours();
+            this->initialTouchPos.clear();
+            this->currentTouchPos.clear();
             isTouchDown = false;
         }
-        else if (initialTouchPos[1] - currentTouchPos[1] < - visibleSize.width * 0.05)
+        else if (gesture==GestureType::Swipe_Up || gesture==GestureType::Swipe_Up_Multi)
         {
-            int initX = initialTouchPos[0];
-            if(initX>20&&initX<620)
+            for (auto &rowcol: rowcols)
             {
-                int col = (initX - 20) / 60;
-                log("SWIPED UP in col: %d", col);
-                std::vector<Piece*> pieces = this->getPiecesByColumn(col);
+                std::vector<Piece*> pieces = this->getPiecesByColumn(rowcol);
                 if(pieces.size()>0)
                 {
                     std::sort (pieces.begin(), pieces.end(), sort_byrow_rev);
@@ -214,7 +309,143 @@ void GamePlay::update(float dt)
                     }
                 }
             }
+            this->setNeighbours();
+            this->initialTouchPos.clear();
+            this->currentTouchPos.clear();
             isTouchDown = false;
+        }
+    }
+    this->findChains();
+}
+
+void GamePlay::setNeighbours()
+{
+    if(this->mapOfPieces.size()<=0) return;
+    
+    for (auto &p: this->mapOfPieces)
+    {
+        p->clearNeighbours();
+    }
+    
+    vector<Piece *> pieces(this->mapOfPieces);
+    while (!pieces.empty())
+    {
+        auto piece = pieces.back();
+        pieces.pop_back();
+        // piece->clearNeighbours();
+        this->setPieceNeighbours(piece, pieces);
+    }
+}
+
+void GamePlay::setPieceNeighbours(Piece* piece, vector<Piece *> pieces)
+{
+    int row = piece->getRow();
+    int col = piece->getColumn();
+    
+    Piece* p1 = this->getPieceByRowColumn(pieces, row-1,col);
+    if(p1!=NULL && p1->getTileType()==piece->getTileType())
+    {
+        piece->addNeighbour(p1);
+        p1->addNeighbour(piece);
+    }
+    
+    Piece* p2 = this->getPieceByRowColumn(pieces, row+1,col);
+    if(p2!=NULL && p2->getTileType()==piece->getTileType())
+    {
+        piece->addNeighbour(p2);
+        p2->addNeighbour(piece);
+    }
+    
+    Piece* p3 = this->getPieceByRowColumn(pieces, row,col-1);
+    if(p3!=NULL && p3->getTileType()==piece->getTileType())
+    {
+        piece->addNeighbour(p3);
+        p3->addNeighbour(piece);
+    }
+    
+    Piece* p4 = this->getPieceByRowColumn(pieces, row,col+1);
+    if(p4!=NULL && p4->getTileType()==piece->getTileType())
+    {
+        piece->addNeighbour(p4);
+        p4->addNeighbour(piece);
+    }
+}
+
+void GamePlay::findChains()
+{
+    vector<vector<Piece *>> chains;
+    
+    vector<Piece *> pieces(this->mapOfPieces);
+    
+    while (!pieces.empty())
+    {
+        auto piece = pieces.back();
+        pieces.pop_back();
+        if(piece->hasNeighbours())
+        {
+            vector<Piece *> list;
+            list.push_back(piece);
+            
+            this->findChildChain(list, piece, pieces);
+            
+            chains.push_back(list);
+        }
+    }
+    if(chains.size()>0)
+    {
+        // log("Chain in found: %d", (int)chains.size());
+        if(chains.size()>0)
+        {
+            for (auto &chain: chains)
+            {
+                if(chain.size()>=3)
+                {
+                    for (auto &piece: chain)
+                    {
+                        for( vector<Piece*>::iterator iter = this->mapOfPieces.begin(); iter != this->mapOfPieces.end(); ++iter )
+                        {
+                            if( *iter == piece )
+                            {
+                                this->vectorOfPositions.push_back(piece->getIndexPosition());
+                                this->removeChild(piece);
+                                this->mapOfPieces.erase( iter );
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+void GamePlay::findChildChain(vector<Piece *>& list, Piece* piece, vector<Piece *>& pieces)
+{
+    if(piece->hasNeighbours())
+    {
+        for (auto &next_piece: piece->getNeighbours())
+        {
+            bool exist = false;
+            for (auto &l: list)
+            {
+                if(l==next_piece) {
+                    exist = true;
+                    break;
+                }
+            }
+            if(exist==false)
+            {
+                list.push_back(next_piece);
+                for (int i=0; i<pieces.size();i++)
+                {
+                    auto ps = pieces[i];
+                    if(ps==next_piece)
+                    {
+                        pieces.erase (pieces.begin()+i);
+                        break;
+                    }
+                }
+                this->findChildChain(list, next_piece, pieces);
+            }
         }
     }
 }
@@ -242,6 +473,23 @@ double GamePlay::getTimeTick()
     gettimeofday(&time, NULL);
     double millisecs = ((double)time.tv_sec * (double)1000.0) + ((double)time.tv_usec/(double)1000.0);
     return millisecs;
+}
+
+Piece* GamePlay::getPieceByRowColumn(vector<Piece *> pieces, int row, int column)
+{
+    if(row<0) return NULL;
+    if(row>9) return NULL;
+    if(column<0) return NULL;
+    if(column>9) return NULL;
+    
+    for (auto &piece: pieces)
+    {
+        if(piece->getRow() == row && piece->getColumn() == column)
+        {
+            return piece;
+        }
+    }
+    return NULL;
 }
 
 std::vector<Piece*> GamePlay::getPiecesByRow(int row)
@@ -276,10 +524,10 @@ void GamePlay::swapPositions(int oldindex, int newindex)
     {
         if(vectorOfPositions[i]==newindex)
         {
-            log("swap position %d - %d",oldindex,newindex);
+            // log("swap position %d - %d",oldindex,newindex);
             vectorOfPositions[i]=oldindex;
             return;
         }
     }
-    log("CANNOT swap position %d - %d",oldindex,newindex);
+    // log("CANNOT swap position %d - %d",oldindex,newindex);
 }
