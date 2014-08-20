@@ -12,7 +12,7 @@ using namespace std;
 class GamePlay : public cocos2d::LayerColor
 {
 private:
-    map<int, Piece *> mapOfPieces;
+    vector<Piece *> mapOfPieces;
     vector<int> vectorOfPositions;
     
     int getRandomIndexPosition ();
@@ -32,6 +32,10 @@ private:
     
     float initialTouchPos[2];
     float currentTouchPos[2];
+    
+    std::vector<Piece*> getPiecesByRow(int row);
+    std::vector<Piece*> getPiecesByColumn(int column);
+    void swapPositions(int oldindex, int newindex);
 
 public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer

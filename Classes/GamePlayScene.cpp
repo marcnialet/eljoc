@@ -59,7 +59,7 @@ bool GamePlay::init()
 }
 bool GamePlay::onTouchBegan(Touch *touch, Event *event)
 {
-    log("onTouchBegan");
+    // log("onTouchBegan");
     initialTouchPos[0] = touch->getLocation().x;
     initialTouchPos[1] = touch->getLocation().y;
     currentTouchPos[0] = touch->getLocation().x;
@@ -72,90 +72,21 @@ bool GamePlay::onTouchBegan(Touch *touch, Event *event)
 
 void GamePlay::onTouchMoved(Touch *touch, Event *event)
 {
-    log("onTouchMoved");
+    // log("onTouchMoved");
     currentTouchPos[0] = touch->getLocation().x;
     currentTouchPos[1] = touch->getLocation().y;
 }
 
 void GamePlay::onTouchEnded(Touch *touch, Event *event)
 {
-    log("onTouchEnded");
+    // log("onTouchEnded");
     isTouchDown = false;
 }
 
 void GamePlay::onTouchCancelled(Touch *touch, Event *event)
 {
-    log("onTouchCancelled");
+    // log("onTouchCancelled");
     onTouchEnded(touch, event);
-}
-
-bool sort_byrow (Piece* piece1, Piece* piece2)
-{
-    if(piece1!=NULL && piece2!=NULL)
-    {
-        return (piece1->getRow()<piece2->getRow());
-    }
-    if(piece1==NULL && piece2!=NULL)
-    {
-        return true;
-    }
-    if(piece1!=NULL && piece2==NULL)
-    {
-        return false;
-    }
-    return false;
-}
-
-bool sort_byrow_rev(Piece* piece1, Piece* piece2)
-{
-    if(piece2!=NULL && piece1!=NULL)
-    {
-        return (piece2->getRow()<piece1->getRow());
-    }
-    if(piece2==NULL && piece1!=NULL)
-    {
-        return true;
-    }
-    if(piece2!=NULL && piece1==NULL)
-    {
-        return false;
-    }
-    return false;
-}
-
-
-bool sort_bycolumn (Piece* piece1, Piece* piece2)
-{
-    if(piece1!=NULL && piece2!=NULL)
-    {
-        return (piece1->getColumn()<piece2->getColumn());
-    }
-    if(piece1==NULL && piece2!=NULL)
-    {
-        return true;
-    }
-    if(piece1!=NULL && piece2==NULL)
-    {
-        return false;
-    }
-    return false;
-}
-
-bool sort_bycolumn_rev(Piece* piece1, Piece* piece2)
-{
-    if(piece2!=NULL && piece1!=NULL)
-    {
-        return (piece2->getColumn()<piece1->getColumn());
-    }
-    if(piece2==NULL && piece1!=NULL)
-    {
-        return true;
-    }
-    if(piece2!=NULL && piece1==NULL)
-    {
-        return false;
-    }
-    return false;
 }
 
 void GamePlay::update(float dt)
@@ -166,37 +97,18 @@ void GamePlay::update(float dt)
     }
     this->end = this->getTimeTick();
     double delay = this->end - this->start;
-    if(delay>2500)
+    if(delay>8000)
     {
         start = 0;
         end = 0;
         if(this->vectorOfPositions.size()>0)
         {
             int index = getRandomIndexPosition();
-            
             int type = getRandomTileType();
-            
-            int column = index / 10;
-            int row = index - (column * 10);
-            
-            
-            Piece * piece = Piece::create(type, index, row, column);
-            
-            float x0 = 50;
-            float y0 = 180;
-            
-            float x = x0 + column * 60.0;
-            float y = y0 + row * 60.0;
-            
-            auto position = Vec2(x,y);
-            
-            piece->setPosition(position);
-            
-            this->mapOfPieces.insert(std::pair<int,Piece *>(index, piece));
-            
+            Piece * piece = Piece::create(type, index);
+            this->mapOfPieces.push_back(piece);
             std::vector<int>::iterator it = this->vectorOfPositions.begin();
             this->vectorOfPositions.erase(it);
-            
             this->addChild(piece);
         }
         else
@@ -215,32 +127,19 @@ void GamePlay::update(float dt)
             {
                 int row = (initY - 150) / 60;
                 log("SWIPED LEFT in row: %d", row);
-                std::vector<Piece*> rowpieces;
-                for (std::map<int, Piece *>::iterator it = this->mapOfPieces.begin(); it != this->mapOfPieces.end(); ++it)
+                std::vector<Piece*> pieces = this->getPiecesByRow(row);
+                if(pieces.size()>0)
                 {
-                    Piece* piece = it->second;
-                    if(piece->getRow() == row)
+                    std::sort (pieces.begin(), pieces.end(), sort_bycolumn);
+                    int newcol = 0;
+                    for (auto &row_piece: pieces)
                     {
-                        rowpieces.push_back(piece);
+                        int oldindex = row_piece->getIndexPosition();
+                        row_piece->setRowColumn(row_piece->getRow(), newcol);
+                        int newindex = row_piece->getIndexPosition();
+                        this->swapPositions(oldindex, newindex);
+                        newcol++;
                     }
-                }
-                
-                std::sort (rowpieces.begin(), rowpieces.end(), sort_bycolumn);
-                int newcol = 0;
-                for (auto &row_piece: rowpieces)
-                {
-                    row_piece->setRowColumn(row_piece->getRow(), newcol);
-                    newcol++;
-                    
-                    float x0 = 50;
-                    float y0 = 180;
-                    
-                    float x = x0 + row_piece->getColumn() * 60.0;
-                    float y = y0 + row_piece->getRow() * 60.0;
-                    
-                    auto position = Vec2(x,y);
-                    
-                    row_piece->setPosition(position);
                 }
             }
             isTouchDown = false;
@@ -252,33 +151,19 @@ void GamePlay::update(float dt)
             {
                 int row = (initY - 150) / 60;
                 log("SWIPED RIGHT in row: %d", row);
-                
-                std::vector<Piece*> rowpieces;
-                for (std::map<int, Piece *>::iterator it = this->mapOfPieces.begin(); it != this->mapOfPieces.end(); ++it)
+                std::vector<Piece*> pieces = this->getPiecesByRow(row);
+                if(pieces.size()>0)
                 {
-                    Piece* piece = it->second;
-                    if(piece->getRow() == row)
+                    std::sort (pieces.begin(), pieces.end(), sort_bycolumn_rev);
+                    int newcol = 9;
+                    for (auto &row_piece: pieces)
                     {
-                        rowpieces.push_back(piece);
+                        int oldindex = row_piece->getIndexPosition();
+                        row_piece->setRowColumn(row_piece->getRow(), newcol);
+                        int newindex = row_piece->getIndexPosition();
+                        this->swapPositions(oldindex, newindex);
+                        newcol--;
                     }
-                }
-                
-                std::sort (rowpieces.begin(), rowpieces.end(), sort_bycolumn_rev);
-                int newcol = 9;
-                for (auto &row_piece: rowpieces)
-                {
-                    row_piece->setRowColumn(row_piece->getRow(), newcol);
-                    newcol--;
-                    
-                    float x0 = 50;
-                    float y0 = 180;
-                    
-                    float x = x0 + row_piece->getColumn() * 60.0;
-                    float y = y0 + row_piece->getRow() * 60.0;
-                    
-                    auto position = Vec2(x,y);
-                    
-                    row_piece->setPosition(position);
                 }
             }
             isTouchDown = false;
@@ -290,35 +175,20 @@ void GamePlay::update(float dt)
             {
                 int col = (initX - 20) / 60;
                 log("SWIPED DOWN in col: %d", col);
-                
-                std::vector<Piece*> colpieces;
-                for (std::map<int, Piece *>::iterator it = this->mapOfPieces.begin(); it != this->mapOfPieces.end(); ++it)
+                std::vector<Piece*> pieces = this->getPiecesByColumn(col);
+                if(pieces.size()>0)
                 {
-                    Piece* piece = it->second;
-                    if(piece->getColumn() == col)
+                    std::sort (pieces.begin(), pieces.end(), sort_byrow);
+                    int newcol = 0;
+                    for (auto &col_piece: pieces)
                     {
-                        colpieces.push_back(piece);
+                        int oldindex = col_piece->getIndexPosition();
+                        col_piece->setRowColumn(newcol, col_piece->getColumn());
+                        int newindex = col_piece->getIndexPosition();
+                        this->swapPositions(oldindex, newindex);
+                        newcol++;
                     }
                 }
-                
-                std::sort (colpieces.begin(), colpieces.end(), sort_byrow);
-                int newcol = 0;
-                for (auto &col_piece: colpieces)
-                {
-                    col_piece->setRowColumn(newcol, col_piece->getColumn());
-                    newcol++;
-                    
-                    float x0 = 50;
-                    float y0 = 180;
-                    
-                    float x = x0 + col_piece->getColumn() * 60.0;
-                    float y = y0 + col_piece->getRow() * 60.0;
-                    
-                    auto position = Vec2(x,y);
-                    
-                    col_piece->setPosition(position);
-                }
-               
             }
             isTouchDown = false;
         }
@@ -329,38 +199,23 @@ void GamePlay::update(float dt)
             {
                 int col = (initX - 20) / 60;
                 log("SWIPED UP in col: %d", col);
-                
-                std::vector<Piece*> colpieces;
-                for (std::map<int, Piece *>::iterator it = this->mapOfPieces.begin(); it != this->mapOfPieces.end(); ++it)
+                std::vector<Piece*> pieces = this->getPiecesByColumn(col);
+                if(pieces.size()>0)
                 {
-                    Piece* piece = it->second;
-                    if(piece->getColumn() == col)
+                    std::sort (pieces.begin(), pieces.end(), sort_byrow_rev);
+                    int newcol = 9;
+                    for (auto &col_piece: pieces)
                     {
-                        colpieces.push_back(piece);
+                        int oldindex = col_piece->getIndexPosition();
+                        col_piece->setRowColumn(newcol, col_piece->getColumn());
+                        int newindex = col_piece->getIndexPosition();
+                        this->swapPositions(oldindex, newindex);
+                        newcol--;
                     }
-                }
-                
-                std::sort (colpieces.begin(), colpieces.end(), sort_byrow_rev);
-                int newcol = 9;
-                for (auto &col_piece: colpieces)
-                {
-                    col_piece->setRowColumn(newcol, col_piece->getColumn());
-                    newcol--;
-                    
-                    float x0 = 50;
-                    float y0 = 180;
-                    
-                    float x = x0 + col_piece->getColumn() * 60.0;
-                    float y = y0 + col_piece->getRow() * 60.0;
-                    
-                    auto position = Vec2(x,y);
-                    
-                    col_piece->setPosition(position);
                 }
             }
             isTouchDown = false;
         }
-        
     }
 }
 
@@ -377,7 +232,6 @@ int GamePlay::getRandomIndexPosition ()
 {
     std::random_shuffle ( this->vectorOfPositions.begin(), this->vectorOfPositions.end(), myrandom);
     int number = this->vectorOfPositions.front();
-    
     // log("Next item: %d", number);
     return number;
 }
@@ -390,3 +244,42 @@ double GamePlay::getTimeTick()
     return millisecs;
 }
 
+std::vector<Piece*> GamePlay::getPiecesByRow(int row)
+{
+    std::vector<Piece*> rowpieces;
+    for (auto &piece: this->mapOfPieces)
+    {
+        if(piece->getRow() == row)
+        {
+            rowpieces.push_back(piece);
+        }
+    }
+    return rowpieces;
+}
+
+std::vector<Piece*> GamePlay::getPiecesByColumn(int column)
+{
+    std::vector<Piece*> colpieces;
+    for (auto &piece: this->mapOfPieces)
+    {
+        if(piece->getColumn() == column)
+        {
+            colpieces.push_back(piece);
+        }
+    }
+    return colpieces;
+}
+
+void GamePlay::swapPositions(int oldindex, int newindex)
+{
+    for (int i=0; i<vectorOfPositions.size();i++)
+    {
+        if(vectorOfPositions[i]==newindex)
+        {
+            log("swap position %d - %d",oldindex,newindex);
+            vectorOfPositions[i]=oldindex;
+            return;
+        }
+    }
+    log("CANNOT swap position %d - %d",oldindex,newindex);
+}
