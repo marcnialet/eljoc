@@ -5,6 +5,7 @@
 
 #include "cocos2d.h"
 #include "Piece.h"
+#include "GameBoard.h"
 
 using namespace std;
 
@@ -22,12 +23,12 @@ enum GestureType
     Swipe_Down_Multi = 8
 };
 
-
 class GamePlay : public cocos2d::LayerColor
 {
 private:
     vector<Piece *> mapOfPieces;
     vector<int> vectorOfPositions;
+    GameBoard* gameBoard;
     
     int getRandomIndexPosition ();
     int getRandomTileType ();
@@ -58,6 +59,7 @@ private:
     
     GestureType GetGestureType(vector<int>& rowcols);
 
+    
 public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();

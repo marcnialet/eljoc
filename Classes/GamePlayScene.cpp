@@ -44,13 +44,14 @@ bool GamePlay::init()
     auto dispatcher = this->getEventDispatcher();
     dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     
+    this->gameBoard = new GameBoard(10, 10);
     
-    isTouchDown = false;
+    this->isTouchDown = false;
     
     this->start = 0;
     this->end = 0;
     
-    for (int i=0; i<100; ++i) this->vectorOfPositions.push_back(i);
+    for (int i=0; i<this->gameBoard->NumberOfBoxes(); ++i) this->vectorOfPositions.push_back(i);
     
     this->scheduleUpdate();
     
@@ -100,17 +101,17 @@ GestureType GamePlay::GetGestureType(vector<int>& rowcols)
         if (initialTouchPos[0].x - currentTouchPos[0].x > visibleSize.width * 0.05)
         {
             int initY = initialTouchPos[0].y;
-            if(initY>150&&initY<750)
+            if(this->gameBoard->isYInBoard(initY))
             {
                 if(multiple)
                 {
                     gesture = GestureType::Swipe_Left_Multi;
-                    for(int i=0; i<10; i++) rowcols.push_back(i);
+                    for(int i=0; i<this->gameBoard->Rows(); i++) rowcols.push_back(i);
                     // log("SWIPED LEFT MULTIPLE");
                 }
                 else
                 {
-                    int rowcol = (initY - 150) / 60;
+                    int rowcol = this->gameBoard->convertYtoRow(initY);
                     rowcols.push_back(rowcol);
                     gesture = GestureType::Swipe_Left;
                     // log("SWIPED LEFT in row: %d", rowcol);
@@ -120,18 +121,18 @@ GestureType GamePlay::GetGestureType(vector<int>& rowcols)
         else if (initialTouchPos[0].x - currentTouchPos[0].x < - visibleSize.width * 0.05)
         {
             int initY = initialTouchPos[0].y;
-            if(initY>150&&initY<750)
+            if(this->gameBoard->isYInBoard(initY))
             {
                 
                 if(multiple)
                 {
                     gesture = GestureType::Swipe_Right_Multi;
-                    for(int i=0; i<10; i++) rowcols.push_back(i);
+                    for(int i=0; i<this->gameBoard->Rows(); i++) rowcols.push_back(i);
                     // log("SWIPED RIGHT MULTIPLE");
                 }
                 else
                 {
-                    int rowcol = (initY - 150) / 60;
+                    int rowcol = this->gameBoard->convertYtoRow(initY);
                     rowcols.push_back(rowcol);
                     gesture = GestureType::Swipe_Right;
                     // log("SWIPED RIGHT in row: %d", rowcol);
@@ -142,18 +143,18 @@ GestureType GamePlay::GetGestureType(vector<int>& rowcols)
         else if (initialTouchPos[0].y - currentTouchPos[0].y > visibleSize.width * 0.05)
         {
             int initX = initialTouchPos[0].x;
-            if(initX>20&&initX<620)
+            if(this->gameBoard->isXInBoard(initX))
             {
                 
                 if(multiple)
                 {
                     gesture = GestureType::Swipe_Down_Multi;
-                    for(int i=0; i<10; i++) rowcols.push_back(i);
+                    for(int i=0; i<this->gameBoard->Columns(); i++) rowcols.push_back(i);
                     // log("SWIPED DOWN MULTIPLE");
                 }
                 else
                 {
-                    int rowcol = (initX - 20) / 60;
+                    int rowcol = this->gameBoard->convertXtoColumn(initX);
                     rowcols.push_back(rowcol);
                     gesture = GestureType::Swipe_Down;
                     // log("SWIPED DOWN in col: %d", rowcol);
@@ -163,18 +164,18 @@ GestureType GamePlay::GetGestureType(vector<int>& rowcols)
         else if (initialTouchPos[0].y - currentTouchPos[0].y < - visibleSize.width * 0.05)
         {
             int initX = initialTouchPos[0].x;
-            if(initX>20&&initX<620)
+            if(this->gameBoard->isXInBoard(initX))
             {
                 
                 if(multiple)
                 {
                     gesture = GestureType::Swipe_Up_Multi;
-                    for(int i=0; i<10; i++) rowcols.push_back(i);
+                    for(int i=0; i<this->gameBoard->Columns(); i++) rowcols.push_back(i);
                     // log("SWIPED UP MULTIPLE");
                 }
                 else
                 {
-                    int rowcol = (initX - 20) / 60;
+                    int rowcol = this->gameBoard->convertXtoColumn(initX);
                     rowcols.push_back(rowcol);
                     gesture = GestureType::Swipe_Up;
                     // log("SWIPED UP in col: %d", rowcol);
@@ -195,7 +196,7 @@ void GamePlay::update(float dt)
     }
     this->end = this->getTimeTick();
     double delay = this->end - this->start;
-    if(delay>4000)
+    if(delay>2500)
     {
         start = 0;
         end = 0;
@@ -203,7 +204,7 @@ void GamePlay::update(float dt)
         {
             int index = getRandomIndexPosition();
             int type = getRandomTileType();
-            Piece * piece = Piece::create(type, index);
+            Piece * piece = Piece::create(type, index, this->gameBoard);
             this->mapOfPieces.push_back(piece);
             std::vector<int>::iterator it = this->vectorOfPositions.begin();
             this->vectorOfPositions.erase(it);
@@ -250,7 +251,7 @@ void GamePlay::update(float dt)
                 if(pieces.size()>0)
                 {
                     std::sort (pieces.begin(), pieces.end(), sort_bycolumn_rev);
-                    int newcol = 9;
+                    int newcol = this->gameBoard->Columns()-1;
                     for (auto &row_piece: pieces)
                     {
                         int oldindex = row_piece->getIndexPosition();
@@ -298,7 +299,7 @@ void GamePlay::update(float dt)
                 if(pieces.size()>0)
                 {
                     std::sort (pieces.begin(), pieces.end(), sort_byrow_rev);
-                    int newcol = 9;
+                    int newcol = this->gameBoard->Rows()-1;
                     for (auto &col_piece: pieces)
                     {
                         int oldindex = col_piece->getIndexPosition();
@@ -332,7 +333,6 @@ void GamePlay::setNeighbours()
     {
         auto piece = pieces.back();
         pieces.pop_back();
-        // piece->clearNeighbours();
         this->setPieceNeighbours(piece, pieces);
     }
 }
@@ -478,9 +478,9 @@ double GamePlay::getTimeTick()
 Piece* GamePlay::getPieceByRowColumn(vector<Piece *> pieces, int row, int column)
 {
     if(row<0) return NULL;
-    if(row>9) return NULL;
+    if(row>this->gameBoard->Rows()-1) return NULL;
     if(column<0) return NULL;
-    if(column>9) return NULL;
+    if(column>this->gameBoard->Columns()-1) return NULL;
     
     for (auto &piece: pieces)
     {
@@ -495,6 +495,9 @@ Piece* GamePlay::getPieceByRowColumn(vector<Piece *> pieces, int row, int column
 std::vector<Piece*> GamePlay::getPiecesByRow(int row)
 {
     std::vector<Piece*> rowpieces;
+    
+    if(row<0) return rowpieces;
+    if(row>this->gameBoard->Rows()-1) return rowpieces;
     for (auto &piece: this->mapOfPieces)
     {
         if(piece->getRow() == row)
@@ -508,6 +511,10 @@ std::vector<Piece*> GamePlay::getPiecesByRow(int row)
 std::vector<Piece*> GamePlay::getPiecesByColumn(int column)
 {
     std::vector<Piece*> colpieces;
+    
+    if(column<0) return colpieces;
+    if(column>this->gameBoard->Columns()-1) return colpieces;
+    
     for (auto &piece: this->mapOfPieces)
     {
         if(piece->getColumn() == column)

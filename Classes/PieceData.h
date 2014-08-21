@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include "cocos2d.h"
+#include "GameBoard.h"
 
 USING_NS_CC;
 
@@ -22,11 +23,12 @@ private:
     int row;
     int column;
     Point position;
+    GameBoard* gameBoard;
     
     Point CalculatePositionFromRowColumn();
     
 public:
-    PieceData(int indexPosition);
+    PieceData(int indexPosition, GameBoard* gameBoard);
     
     int getRow() { return this->row; }
     int getColumn() { return this->column; }

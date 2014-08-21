@@ -14,23 +14,22 @@
 #include <iostream>
 #include "cocos2d.h"
 #include "PieceData.h"
+#include "GameBoard.h"
 
 using namespace std;
 
 USING_NS_CC;
-
-
 
 class Piece: public Sprite
 {
     std::string filename;
     PieceData* data;
     vector<Piece *> neighbours;
-   
+    GameBoard* gameBoard;
     
     EventListenerTouchOneByOne *listener;
     bool _actived;
-    static std::string getFileNameFromType(int tileType);
+    static std::string getFileNameFromType(int tileType, int rows);
     void setActived(bool active);
     
 public:
@@ -49,7 +48,7 @@ public:
     int getIndexPosition() { return this->data->getIndexPosition(); }
     
     // Constructor
-    static Piece* create(const int tileType, int indexPosition);
+    static Piece* create(const int tileType, int indexPosition, GameBoard* gameBoard);
     static Piece* create(const std::string &filename);
     virtual bool init(const std::string &filename);
     

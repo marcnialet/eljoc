@@ -8,12 +8,12 @@
 
 #include "Piece.h"
 
-Piece* Piece::create(const int tileType, int indexPosition)
+Piece* Piece::create(const int tileType, int indexPosition, GameBoard* gameBoard)
 {
-    Piece * piece = Piece::create(getFileNameFromType(tileType));
+    Piece * piece = Piece::create(getFileNameFromType(tileType, gameBoard->Rows()));
     if(piece!= NULL)
     {
-        piece->data = new PieceData(indexPosition);
+        piece->data = new PieceData(indexPosition, gameBoard);
         piece->data->setTileType(tileType);
         piece->setPosition(piece->data->getPosition());
     }
@@ -116,22 +116,50 @@ bool Piece::hasNeighbours()
     return false;
     
 }
-std::string Piece::getFileNameFromType(int tileType)
+std::string Piece::getFileNameFromType(int tileType, int rows)
 {
     std::string filename;
     switch (tileType)
     {
         case 0:
-            filename="blue_tile.png";
+            if( rows == 8 )
+            {
+                filename="8x8/blue_tile.png";
+            }
+            else
+            {
+                filename="10x10/blue_tile.png";
+            }
             break;
         case 1:
-            filename="green_tile.png";
+            if( rows == 8 )
+            {
+                filename="8x8/green_tile.png";
+            }
+            else
+            {
+                filename="10x10/green_tile.png";
+            }
             break;
         case 2:
-            filename="red_tile.png";
+            if( rows == 8 )
+            {
+                filename="8x8/red_tile.png";
+            }
+            else
+            {
+                filename="10x10/red_tile.png";
+            }
             break;
         case 3:
-            filename="yellow_tile.png";
+            if( rows == 8 )
+            {
+                filename="8x8/yellow_tile.png";
+            }
+            else
+            {
+                filename="10x10/yellow_tile.png";
+            }
             break;
             
         default:
@@ -173,7 +201,6 @@ bool sort_byrow_rev(Piece* piece1, Piece* piece2)
     }
     return false;
 }
-
 
 bool sort_bycolumn (Piece* piece1, Piece* piece2)
 {
