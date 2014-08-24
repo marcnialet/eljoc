@@ -7,7 +7,7 @@
 	<key>Board_Width</key>
 	<integer>8</integer>
 	<key>Points</key>
-	<integer>200</integer>
+	<integer>500</integer>
 	<key>DelayDecrement</key>
 	<string>0</string>
 	<key>DelayMs</key>

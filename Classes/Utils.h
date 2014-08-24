@@ -20,5 +20,6 @@ class Utils
 {
 public:
     static double getTimeTick();
+    static int myrandom (int i);
 };
 #endif /* defined(__eljoc__Utils__) */

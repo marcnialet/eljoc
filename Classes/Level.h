@@ -24,13 +24,17 @@ private:
     
     Size boardSize;
     unsigned int points;
-    double elapsedTimeMs;
+    double delayMs;
+    double delayDecrement;
+    
+    
+   /* double elapsedTimeMs;
     unsigned int numberOfPieces;
     unsigned int numberOfCombos;
     unsigned int numberOfChains;
     vector<unsigned int> piecesCounter;
     vector<unsigned int> combosCounter;
-    vector<unsigned int> chainsCounter;
+    vector<unsigned int> chainsCounter;*/
     
 public:
     static Level* createFromFile(const std::string &filename);
@@ -42,6 +46,8 @@ public:
     Statistics* getStats() { return this->statistics; }
     
     Size getBoardSize() { return this->boardSize; }
+    
+    double getPieceDelay();
     
     
 };

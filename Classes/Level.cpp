@@ -23,10 +23,18 @@ Level* Level::createFromFile(const std::string &filename)
         {
             level->boardSize = Size(map["Board_Width"].asInt(), map["Board_Height"].asInt());
             level->points = map["Points"].asInt();
+            level->delayMs = map["DelayMs"].asDouble();
+            level->delayDecrement = map["DelayDecrement"].asDouble();
+            
             return level;
         }
     }
     return nullptr;
+}
+
+double Level::getPieceDelay()
+{
+    return this->delayMs;
 }
 
 bool Level::IsLevelDone()

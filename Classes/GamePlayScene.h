@@ -9,16 +9,16 @@
 #include "GameBoard.h"
 #include "Level.h"
 #include "Statistics.h"
+#include "GameOverLayer.h"
+#include "GameEndLevelLayer.h"
+#include "GameHUDLayer.h"
 
 using namespace std;
-
-
 
 class GamePlay : public cocos2d::Layer
 {
 private:
-    Label* scoreLabel;
-    
+   
     GameMode gameMode;
     int currentLevel;
     Level * level;
@@ -41,6 +41,7 @@ private:
     bool isTouchDown;
     vector<Point> initialTouchPos;
     vector<Point> currentTouchPos;
+    bool isTouchClicked;
     
     std::vector<Piece*> getPiecesByRow(int row);
     std::vector<Piece*> getPiecesByColumn(int column);
@@ -56,8 +57,15 @@ private:
     Level* loadLevel(int levelnumber);
     void startCurrentLevel();
     void runGameLoop();
-    
-    Label* addLabel(const float fontSize, const char *text, const cocos2d::Vec2 anchor, const cocos2d::Vec2 position);
+    void runGameOverLoop();
+    void runEndOfLevelLoop();
+    void updateScore();
+    GameHUDLayer* getHUDLayer();
+    GameOverLayer* getGameOverLayer();
+    GameEndLevelLayer* getEndLevelLayer();
+    bool mustAddPieces();
+    void addPiecesToBoard();
+    void processGesture();
 public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();

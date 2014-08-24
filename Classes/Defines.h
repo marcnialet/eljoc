@@ -9,7 +9,18 @@
 #ifndef __eljoc__Defines__
 #define __eljoc__Defines__
 
-#define kFontName "Marker Felt.ttf"
+#define LAYER_TAG_GAMEPLAY      1
+#define LAYER_TAG_GAMEOVER      2
+#define LAYER_TAG_GAMEHUD       3
+#define LAYER_TAG_GAMEENDLEVEL  4
+
+#define LAYER_Z_GAMEPLAY      1
+#define LAYER_Z_GAMEOVER      2
+#define LAYER_Z_GAMEHUD       3
+#define LAYER_Z_GAMEENDLEVEL  4
+
+
+#define kFontName "fonts/Marker Felt.ttf"
 
 enum GestureType
 {
