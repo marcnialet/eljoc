@@ -250,6 +250,7 @@
 		1D6058910D05DD3D006BFB54 /* eljoc iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "eljoc iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		492128E619A9F5F80026EF95 /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Defines.h; path = ../Classes/Defines.h; sourceTree = "<group>"; };
 		493970B019A5DD8300B2C274 /* GameBoard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameBoard.cpp; path = ../Classes/GameBoard.cpp; sourceTree = "<group>"; };
 		493970B119A5DD8300B2C274 /* GameBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameBoard.h; path = ../Classes/GameBoard.h; sourceTree = "<group>"; };
 		495AEBC919A6903C00C1410A /* 8x8 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = 8x8; sourceTree = "<group>"; };
@@ -396,6 +397,7 @@
 				49CB9C6219A8D26D0070BD30 /* Statistics.h */,
 				49CB9C6519A8D4CD0070BD30 /* Utils.cpp */,
 				49CB9C6619A8D4CD0070BD30 /* Utils.h */,
+				492128E619A9F5F80026EF95 /* Defines.h */,
 			);
 			name = Classes;
 			path = ../classes;

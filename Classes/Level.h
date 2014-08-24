@@ -36,12 +36,12 @@ public:
     static Level* createFromFile(const std::string &filename);
     
     Level();
-    
-    void Start();
-    void Stop();
+
     bool IsLevelDone();
     
     Statistics* getStats() { return this->statistics; }
+    
+    Size getBoardSize() { return this->boardSize; }
     
     
 };

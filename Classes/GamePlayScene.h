@@ -3,29 +3,26 @@
 
 #include <iostream>
 
+#include "Defines.h"
 #include "cocos2d.h"
 #include "Piece.h"
 #include "GameBoard.h"
+#include "Level.h"
+#include "Statistics.h"
 
 using namespace std;
 
-enum GestureType
-{
-    None = 0,
-    Swipe_Left = 1,
-    Swipe_Right = 2,
-    Swipe_Up = 3,
-    Swipe_Down = 4,
-    
-    Swipe_Left_Multi = 5,
-    Swipe_Right_Multi = 6,
-    Swipe_Up_Multi = 7,
-    Swipe_Down_Multi = 8
-};
+
 
 class GamePlay : public cocos2d::Layer
 {
 private:
+    Label* scoreLabel;
+    
+    GameMode gameMode;
+    int currentLevel;
+    Level * level;
+    Statistics* statistics;
     vector<Piece *> mapOfPieces;
     vector<int> vectorOfPositions;
     GameBoard* gameBoard;
@@ -35,13 +32,12 @@ private:
     
     void update(float dt);
     
+    int swipeThreshold;
+    
     double start;
     double end;
     
-    EventListenerTouchAllAtOnce *listener;
-    
-    cocos2d::Size visibleSize;
-    
+    EventListenerTouchAllAtOnce *listener;    
     bool isTouchDown;
     vector<Point> initialTouchPos;
     vector<Point> currentTouchPos;
@@ -57,8 +53,11 @@ private:
     Piece* getPieceByRowColumn(vector<Piece *> pieces, int row, int column);
     
     GestureType GetGestureType(vector<int>& rowcols);
-
+    Level* loadLevel(int levelnumber);
+    void startCurrentLevel();
+    void runGameLoop();
     
+    Label* addLabel(const float fontSize, const char *text, const cocos2d::Vec2 anchor, const cocos2d::Vec2 position);
 public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();

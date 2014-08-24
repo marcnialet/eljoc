@@ -29,15 +29,11 @@ Level* Level::createFromFile(const std::string &filename)
     return nullptr;
 }
 
-void Start()
+bool Level::IsLevelDone()
 {
+    bool pointsOk = this->statistics->getPoints() >= this->points;
     
-}
-void Stop()
-{
+    bool levelDone = pointsOk;
     
-}
-bool IsLevelDone()
-{
-    return false;
+    return levelDone;
 }

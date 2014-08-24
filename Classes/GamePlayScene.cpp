@@ -1,6 +1,6 @@
 #include "GamePlayScene.h"
 #include "Utils.h"
-#include "Level.h"
+#include "Defines.h"
 
 USING_NS_CC;
 
@@ -30,16 +30,10 @@ bool GamePlay::init()
         return false;
     }
     
-    srand ( time(NULL) );
+    this->scoreLabel = this->addLabel(48, "Score 0", Vec2(0.0, 1.0), Vec2(10, Director::getInstance()->getVisibleSize().height - 10));
     
-    // Size visibleSize = Director::getInstance()->getVisibleSize();
-    // Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    
-    visibleSize = Director::getInstance()->getVisibleSize();
-
     
     this->listener = EventListenerTouchAllAtOnce::create();
-    
     listener->onTouchesBegan = CC_CALLBACK_2(GamePlay::onTouchesBegan, this);
     listener->onTouchesMoved = CC_CALLBACK_2(GamePlay::onTouchesMoved, this);
     listener->onTouchesEnded = CC_CALLBACK_2(GamePlay::onTouchesEnded, this);
@@ -47,19 +41,33 @@ bool GamePlay::init()
     auto dispatcher = this->getEventDispatcher();
     dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     
-    Level* level = Level::createFromFile("Levels/Level_0.plist");
-    this->gameBoard = new GameBoard(10, 10);
     
+    this->swipeThreshold = Director::getInstance()->getVisibleSize().width * 0.05;
+    this->currentLevel = 1;
+    this->gameMode = GameMode::NotLoaded;
     this->isTouchDown = false;
-    
     this->start = 0;
     this->end = 0;
-    
-    for (int i=0; i<this->gameBoard->NumberOfBoxes(); ++i) this->vectorOfPositions.push_back(i);
+    this->statistics = new Statistics();
     
     this->scheduleUpdate();
     
     return true;
+}
+Label* GamePlay::addLabel(const float fontSize, const char *text,
+							const cocos2d::Vec2 anchor, const cocos2d::Vec2 position)
+{
+    TTFConfig config("fonts/Marker Felt.ttf", 25);
+   
+    
+	Label *theLabel = Label::createWithTTF(config, text);
+    //LabelTTF *theLabel = LabelTTF::create(text, "Arial", 24);
+    
+	theLabel->setAnchorPoint(anchor);
+	theLabel->setPosition(position);
+	theLabel->setColor(Color3B::RED);
+	this->addChild(theLabel, 100);
+	return theLabel;
 }
 void GamePlay::onTouchesBegan(const vector<Touch*>& touches, Event* event)
 {
@@ -102,7 +110,7 @@ GestureType GamePlay::GetGestureType(vector<int>& rowcols)
     bool multiple = currentTouchPos.size()>1 && currentTouchPos.size()>1;
     if(single||multiple)
     {
-        if (initialTouchPos[0].x - currentTouchPos[0].x > visibleSize.width * 0.05)
+        if (initialTouchPos[0].x - currentTouchPos[0].x > this->swipeThreshold)
         {
             int initY = initialTouchPos[0].y;
             if(this->gameBoard->isYInBoard(initY))
@@ -122,7 +130,7 @@ GestureType GamePlay::GetGestureType(vector<int>& rowcols)
                 }
             }
         }
-        else if (initialTouchPos[0].x - currentTouchPos[0].x < - visibleSize.width * 0.05)
+        else if (initialTouchPos[0].x - currentTouchPos[0].x < - this->swipeThreshold)
         {
             int initY = initialTouchPos[0].y;
             if(this->gameBoard->isYInBoard(initY))
@@ -144,7 +152,7 @@ GestureType GamePlay::GetGestureType(vector<int>& rowcols)
             }
         }
         
-        else if (initialTouchPos[0].y - currentTouchPos[0].y > visibleSize.width * 0.05)
+        else if (initialTouchPos[0].y - currentTouchPos[0].y > this->swipeThreshold)
         {
             int initX = initialTouchPos[0].x;
             if(this->gameBoard->isXInBoard(initX))
@@ -165,7 +173,7 @@ GestureType GamePlay::GetGestureType(vector<int>& rowcols)
                 }
             }
         }
-        else if (initialTouchPos[0].y - currentTouchPos[0].y < - visibleSize.width * 0.05)
+        else if (initialTouchPos[0].y - currentTouchPos[0].y < - this->swipeThreshold)
         {
             int initX = initialTouchPos[0].x;
             if(this->gameBoard->isXInBoard(initX))
@@ -194,6 +202,56 @@ GestureType GamePlay::GetGestureType(vector<int>& rowcols)
 
 void GamePlay::update(float dt)
 {
+    
+    switch(this->gameMode)
+    {
+        case GameMode::NotLoaded:
+            this->gameMode = GameMode::LoadingLevel;
+            break;
+        case GameMode::LoadingLevel:
+            this->startCurrentLevel();
+            this->gameMode = GameMode::LevelLoaded;
+            break;
+        case GameMode::LevelLoaded:
+            this->gameMode = GameMode::Running;
+            break;
+        case GameMode::Running:
+            this->runGameLoop();
+            break;
+        case GameMode::LevelDone:
+            break;
+        case GameMode::GameOver:
+            break;
+        case GameMode::Paused:
+            break;
+    }
+}
+
+void GamePlay::startCurrentLevel()
+{
+    this->level = loadLevel(this->currentLevel);
+    srand ( time(NULL) );
+    
+    this->gameBoard = new GameBoard(this->level->getBoardSize().width, this->level->getBoardSize().height);
+    
+    this->isTouchDown = false;
+    this->start = 0;
+    this->end = 0;
+    for (int i=0; i<this->gameBoard->NumberOfBoxes(); ++i)
+    {
+        this->vectorOfPositions.push_back(i);
+    }
+}
+
+Level* GamePlay::loadLevel(int levelnumber)
+{
+    string filename = "Levels/Level_"+to_string(levelnumber)+".plist";
+    auto l = Level::createFromFile(filename);
+    return l;
+}
+
+void GamePlay::runGameLoop()
+{
     if(this->start==0 && this->end==0)
     {
         this->start = Utils::getTimeTick();
@@ -207,12 +265,15 @@ void GamePlay::update(float dt)
         if(this->vectorOfPositions.size()>0)
         {
             int index = getRandomIndexPosition();
-            int type = getRandomTileType();
-            Piece * piece = Piece::create(type, index, this->gameBoard);
+            int pieceType = getRandomTileType();
+            Piece * piece = Piece::create(pieceType, index, this->gameBoard);
             this->mapOfPieces.push_back(piece);
             std::vector<int>::iterator it = this->vectorOfPositions.begin();
             this->vectorOfPositions.erase(it);
             this->addChild(piece);
+            
+            this->statistics->addPiece(pieceType);
+            this->level->getStats()->addPiece(pieceType);
             
             this->setPieceNeighbours(piece, this->mapOfPieces);
         }
@@ -321,6 +382,17 @@ void GamePlay::update(float dt)
         }
     }
     this->findChains();
+    
+    if(this->level->IsLevelDone())
+    {
+        this->gameMode = GameMode::LevelDone;
+    }
+    else
+    {
+        char ScoreString[64];
+        sprintf(ScoreString, "Score %d", this->statistics->getPoints());
+        this->scoreLabel->setString(ScoreString);
+    }
 }
 
 void GamePlay::setNeighbours()
@@ -402,8 +474,12 @@ void GamePlay::findChains()
         {
             for (auto &chain: chains)
             {
+                int combosize = 0;
                 if(chain.size()>=3)
                 {
+                    this->statistics->addChain(chain.size());
+                    this->level->getStats()->addChain(chain.size());
+                    combosize++;
                     for (auto &piece: chain)
                     {
                         for( vector<Piece*>::iterator iter = this->mapOfPieces.begin(); iter != this->mapOfPieces.end(); ++iter )
@@ -417,6 +493,11 @@ void GamePlay::findChains()
                             }
                         }
                     }
+                }
+                if(combosize>1)
+                {
+                    this->statistics->addCombo(combosize);
+                    this->level->getStats()->addCombo(combosize);
                 }
             }
         }

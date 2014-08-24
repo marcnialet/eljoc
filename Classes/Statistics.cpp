@@ -28,10 +28,12 @@ void Statistics::Reset()
     this->combosCounter.clear();
     this->chainsCounter.clear();
     
-    this->piecesCounter.reserve(100);
-    this->combosCounter.reserve(100);
-    this->chainsCounter.reserve(100);
-    
+    for(int i=0; i<100; i++)
+    {
+        this->piecesCounter.push_back(0);
+        this->combosCounter.push_back(0);
+        this->chainsCounter.push_back(0);
+    }
     this->starttime = 0;
     this->endtime = 0;
 }
