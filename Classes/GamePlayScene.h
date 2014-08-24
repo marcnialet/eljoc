@@ -23,7 +23,7 @@ enum GestureType
     Swipe_Down_Multi = 8
 };
 
-class GamePlay : public cocos2d::LayerColor
+class GamePlay : public cocos2d::Layer
 {
 private:
     vector<Piece *> mapOfPieces;
@@ -33,7 +33,6 @@ private:
     int getRandomIndexPosition ();
     int getRandomTileType ();
     
-    double getTimeTick();
     void update(float dt);
     
     double start;
@@ -74,9 +73,7 @@ public:
     
     
     // implement the "static create()" method manually
-    CREATE_FUNC(GamePlay);
-
-    
+    CREATE_FUNC(GamePlay);   
 };
 
 #endif // __GAMEPLAY_SCENE_H__

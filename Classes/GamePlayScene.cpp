@@ -1,5 +1,6 @@
 #include "GamePlayScene.h"
-
+#include "Utils.h"
+#include "Level.h"
 
 USING_NS_CC;
 
@@ -24,10 +25,12 @@ bool GamePlay::init()
     //////////////////////////////
     // 1. super init first
     
-    if (!LayerColor::initWithColor(Color4B(255, 255, 255, 255)))
+    if ( !Layer::init() )
     {
         return false;
     }
+    
+    srand ( time(NULL) );
     
     // Size visibleSize = Director::getInstance()->getVisibleSize();
     // Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -44,6 +47,7 @@ bool GamePlay::init()
     auto dispatcher = this->getEventDispatcher();
     dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     
+    Level* level = Level::createFromFile("Levels/Level_0.plist");
     this->gameBoard = new GameBoard(10, 10);
     
     this->isTouchDown = false;
@@ -192,9 +196,9 @@ void GamePlay::update(float dt)
 {
     if(this->start==0 && this->end==0)
     {
-        this->start = this->getTimeTick();
+        this->start = Utils::getTimeTick();
     }
-    this->end = this->getTimeTick();
+    this->end = Utils::getTimeTick();
     double delay = this->end - this->start;
     if(delay>2500)
     {
@@ -467,13 +471,7 @@ int GamePlay::getRandomIndexPosition ()
     return number;
 }
 
-double GamePlay::getTimeTick()
-{
-    timeval time;
-    gettimeofday(&time, NULL);
-    double millisecs = ((double)time.tv_sec * (double)1000.0) + ((double)time.tv_usec/(double)1000.0);
-    return millisecs;
-}
+
 
 Piece* GamePlay::getPieceByRowColumn(vector<Piece *> pieces, int row, int column)
 {
