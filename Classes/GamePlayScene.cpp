@@ -627,8 +627,12 @@ void GamePlay::findChains()
                         {
                             if( *iter == piece )
                             {
+                                auto callback = CallFunc::create(CC_CALLBACK_0(GamePlay::removePieceCallback, this, piece));
+                                auto fadeOut = FadeOut::create(0.100);
+                                auto rotate = RotateBy::create(0.150, 720);
+                                auto sequence = Sequence::create(rotate, fadeOut, callback, NULL);
+                                piece->runAction(sequence);
                                 this->vectorOfPositions.push_back(piece->getIndexPosition());
-                                this->removeChild(piece);
                                 this->mapOfPieces.erase( iter );
                                 break;
                             }
@@ -644,6 +648,10 @@ void GamePlay::findChains()
             }
         }
     }
+}
+void GamePlay::removePieceCallback(Piece* piece)
+{
+    this->removeChild(piece);
 }
 
 void GamePlay::findChildChain(vector<Piece *>& list, Piece* piece, vector<Piece *>& pieces)

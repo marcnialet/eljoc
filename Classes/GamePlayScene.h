@@ -70,6 +70,8 @@ private:
     void addPiecesToBoard();
     void processGesture();
     bool isGameOver();
+    
+    void removePieceCallback(Piece* piece);
 public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();
