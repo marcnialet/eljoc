@@ -11,21 +11,42 @@
 Level::Level()
 {
     this->statistics = new Statistics();
+    this->setDefaultValues();
 }
 
 Level* Level::createFromFile(const std::string &filename)
 {
+    
     ValueMap map = FileUtils::getInstance()->getValueMapFromFile(filename);
     if(map.size()>0)
     {
         Level* level = new Level();
         if(level!=nullptr)
         {
-            level->boardSize = Size(map["Board_Width"].asInt(), map["Board_Height"].asInt());
-            level->points = map["Points"].asInt();
-            level->delayMs = map["DelayMs"].asDouble();
-            level->delayDecrement = map["DelayDecrement"].asDouble();
+            if(ConfigKeyExists(map, "Board_Width") && ConfigKeyExists(map, "Board_Height"))
+            {
+                level->boardSize = Size(map["Board_Width"].asInt(), map["Board_Height"].asInt());
+            }
             
+            if(ConfigKeyExists(map, "Points"))
+            {
+                level->points = map["Points"].asInt();
+            }
+            
+            if(ConfigKeyExists(map, "DelayMs"))
+            {
+                level->delayMs = map["DelayMs"].asDouble();
+            }
+            
+            if(ConfigKeyExists(map, "DelayDecrement"))
+            {
+                level->delayDecrement = map["DelayDecrement"].asDouble();
+            }
+            
+            if(ConfigKeyExists(map, "NumberOfPieces"))
+            {
+                level->numberOfPieces = map["NumberOfPieces"].asInt();
+            }
             return level;
         }
     }
@@ -44,4 +65,25 @@ bool Level::IsLevelDone()
     bool levelDone = pointsOk;
     
     return levelDone;
+}
+
+void Level::setDefaultValues()
+{
+    this->boardSize = Size(8,8);
+    this->points = 1000;
+    this->delayMs = 1000;
+    this->delayDecrement = 0;
+    this->numberOfPieces = 4;
+}
+
+bool Level::ConfigKeyExists(ValueMap map, string key)
+{
+    auto iter = map.find(key);
+    bool exists;
+    if ( iter == map.end() )
+    {
+        log("The Configuration value %s has been not found in the Level configuration file.",key.c_str());
+        exists = false;
+    }
+    return exists;
 }

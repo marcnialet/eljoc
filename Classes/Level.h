@@ -26,7 +26,7 @@ private:
     unsigned int points;
     double delayMs;
     double delayDecrement;
-    
+    int numberOfPieces;
     
    /* double elapsedTimeMs;
     unsigned int numberOfPieces;
@@ -36,6 +36,8 @@ private:
     vector<unsigned int> combosCounter;
     vector<unsigned int> chainsCounter;*/
     
+    void setDefaultValues();
+    static bool ConfigKeyExists(ValueMap map, string key);
 public:
     static Level* createFromFile(const std::string &filename);
     
@@ -48,6 +50,8 @@ public:
     Size getBoardSize() { return this->boardSize; }
     
     double getPieceDelay();
+    
+    int getNumberOfPieces() { return this->numberOfPieces; }
     
     
 };
