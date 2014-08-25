@@ -161,7 +161,46 @@ std::string Piece::getFileNameFromType(int tileType, int rows)
                 filename="10x10/yellow_tile.png";
             }
             break;
-            
+        case 4:
+            if( rows == 8 )
+            {
+                filename="8x8/rosa_tile.png";
+            }
+            else
+            {
+                filename="10x10/rosa_tile.png";
+            }
+            break;
+        case 5:
+            if( rows == 8 )
+            {
+                filename="8x8/marron_tile.png";
+            }
+            else
+            {
+                filename="10x10/marron_tile.png";
+            }
+            break;
+        case 6:
+            if( rows == 8 )
+            {
+                filename="8x8/orange_tile.png";
+            }
+            else
+            {
+                filename="10x10/orange_tile.png";
+            }
+            break;
+        case 7:
+            if( rows == 8 )
+            {
+                filename="8x8/magenta_tile.png";
+            }
+            else
+            {
+                filename="10x10/magenta_tile.png";
+            }
+            break;
         default:
             break;
     }

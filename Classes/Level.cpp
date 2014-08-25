@@ -16,7 +16,6 @@ Level::Level()
 
 Level* Level::createFromFile(const std::string &filename)
 {
-    
     ValueMap map = FileUtils::getInstance()->getValueMapFromFile(filename);
     if(map.size()>0)
     {
@@ -47,10 +46,31 @@ Level* Level::createFromFile(const std::string &filename)
             {
                 level->numberOfPieces = map["NumberOfPieces"].asInt();
             }
+            
+            if(ConfigKeyExists(map, "NumberOfTypes"))
+            {
+                level->numberOfTypes = map["NumberOfTypes"].asInt();
+            }
+            
             return level;
         }
     }
     return nullptr;
+}
+void Level::start()
+{
+    if(this->statistics!=NULL)
+    {
+        this->statistics->startTime();
+    }
+}
+
+void Level::stop()
+{
+    if(this->statistics!=NULL)
+    {
+        this->statistics->stopTime();
+    }
 }
 
 double Level::getPieceDelay()
@@ -73,13 +93,14 @@ void Level::setDefaultValues()
     this->points = 1000;
     this->delayMs = 1000;
     this->delayDecrement = 0;
-    this->numberOfPieces = 4;
+    this->numberOfPieces = 1;
+    this->numberOfTypes = 4;
 }
 
 bool Level::ConfigKeyExists(ValueMap map, string key)
 {
     auto iter = map.find(key);
-    bool exists;
+    bool exists = true;
     if ( iter == map.end() )
     {
         log("The Configuration value %s has been not found in the Level configuration file.",key.c_str());

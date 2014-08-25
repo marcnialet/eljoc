@@ -22,11 +22,15 @@ class Level
 private:
     Statistics* statistics;
     
-    Size boardSize;
-    unsigned int points;
-    double delayMs;
+    Size boardSize;         // size of the board
+    int numberOfPieces;     // number of pieces to add to the board each delay
+    int numberOfTypes;      // number of piece's types.
+    double delayMs;         // delay in ms to add a new piece in the board.
     double delayDecrement;
-    int numberOfPieces;
+    
+    // Level goals
+    unsigned int points; // Number of point to do.
+    
     
    /* double elapsedTimeMs;
     unsigned int numberOfPieces;
@@ -42,17 +46,14 @@ public:
     static Level* createFromFile(const std::string &filename);
     
     Level();
-
+    void start();
+    void stop();
     bool IsLevelDone();
     
     Statistics* getStats() { return this->statistics; }
-    
     Size getBoardSize() { return this->boardSize; }
-    
-    double getPieceDelay();
-    
     int getNumberOfPieces() { return this->numberOfPieces; }
-    
-    
+    int getNumberOfTypes() { return this->numberOfTypes; }
+    double getPieceDelay();
 };
 #endif /* defined(__eljoc__Level__) */

@@ -60,14 +60,14 @@ void GamePlay::update(float dt)
     switch(this->gameMode)
     {
         case GameMode::NotLoaded:
-            this->gameMode = GameMode::LoadingLevel;
+            this->setGameMode(GameMode::LoadingLevel);
             break;
         case GameMode::LoadingLevel:
             this->startCurrentLevel();
-            this->gameMode = GameMode::LevelLoaded;
+            this->setGameMode(GameMode::LevelLoaded);
             break;
         case GameMode::LevelLoaded:
-            this->gameMode = GameMode::Running;
+            this->setGameMode(GameMode::Running);
             break;
         case GameMode::Running:
             this->runGameLoop();
@@ -85,11 +85,33 @@ void GamePlay::update(float dt)
     }
 }
 
+void GamePlay::setGameMode(GameMode gamemode)
+{
+    this->gameMode = gamemode;
+    switch(this->gameMode)
+    {
+        case GameMode::Running:
+            this->startGame();
+            break;
+        case GameMode::NotLoaded:
+        case GameMode::LoadingLevel:
+        case GameMode::LevelLoaded:
+        case GameMode::LevelDone:
+        case GameMode::GameOver:
+        case GameMode::Paused:
+            this->stopGame();
+            break;
+        default:
+            this->stopGame();
+            break;
+    }
+}
+
 void GamePlay::runGameLoop()
 {
     if(this->isGameOver())
     {
-        this->gameMode = GameMode::GameOver;
+        this->setGameMode(GameMode::GameOver);
     }
     else
     {
@@ -102,7 +124,7 @@ void GamePlay::runGameLoop()
         this->findChains();
         if(this->level->IsLevelDone())
         {
-            this->gameMode = GameMode::LevelDone;
+            this->setGameMode(GameMode::LevelDone);
         }
     }
 }
@@ -125,7 +147,7 @@ void GamePlay::runEndOfLevelLoop()
     {
         this->getEndLevelLayer()->setVisible(false);
         this->currentLevel++;
-        this->gameMode = GameMode::LoadingLevel;
+        this->setGameMode(GameMode::LoadingLevel);
     }
 }
 
@@ -302,6 +324,7 @@ Level* GamePlay::loadLevel(int levelnumber)
 {
     string filename = "Levels/Level_"+to_string(levelnumber)+".plist";
     auto l = Level::createFromFile(filename);
+    this->statistics->setLevelStatistics(l->getStats());
     return l;
 }
 
@@ -335,6 +358,17 @@ bool GamePlay::mustAddPieces()
 
 void GamePlay::addPiecesToBoard()
 {
+    for(int i=0; i<this->level->getNumberOfPieces(); i++)
+    {
+        if(this->vectorOfPositions.size()>0)
+        {
+           this->addPieceToBoard();
+        }
+    }
+}
+
+void GamePlay::addPieceToBoard()
+{
     Piece* piece;
     int index;
     int pieceType;
@@ -347,20 +381,8 @@ void GamePlay::addPiecesToBoard()
         neighbours = this->getPieceNeighbours(nextpiece, this->mapOfPieces);
         if(neighbours.size()<1 || i==2)
         {
-            if(i==2)
-            {
-                log("Next piece has %d neighbours -> BUT CANNOT be discarted!!", (int)neighbours.size());
-            }
-            else
-            {
-                log("Next piece has %d neighbours -> ADDED", (int)neighbours.size());
-            }
             piece = nextpiece;
             break;
-        }
-        else
-        {
-            log("Next piece has %d neighbours -> DISCARTED!!", (int)neighbours.size());
         }
     }
     
@@ -370,9 +392,8 @@ void GamePlay::addPiecesToBoard()
     this->addChild(piece);
     
     this->statistics->addPiece(pieceType);
-    this->level->getStats()->addPiece(pieceType);
+    //this->level->getStats()->addPiece(pieceType);
     this->updateScore();
-    
     
     this->setPieceNeighbours(piece, neighbours);
 }
@@ -483,12 +504,28 @@ void GamePlay::processGesture()
     }
 }
 
+void GamePlay::startGame()
+{
+    if(this->level!=NULL)
+    {
+        this->level->start();
+    }
+}
+
+void GamePlay::stopGame()
+{
+    if(this->level!=NULL)
+    {
+        this->level->stop();
+    }
+}
+
 void GamePlay::updateScore()
 {
     GameHUDLayer* layerHUD = this->getHUDLayer();
     if(layerHUD!=nullptr)
     {
-         layerHUD->setScore(this->statistics->getPoints());
+         layerHUD->setScore(this->statistics->getLevelStadistics()->getPoints());
     }
 }
 
@@ -618,7 +655,7 @@ void GamePlay::findChains()
                 if(chain.size()>=3)
                 {
                     this->statistics->addChain(chain.size());
-                    this->level->getStats()->addChain(chain.size());
+                    //this->level->getStats()->addChain(chain.size());
                     this->updateScore();
                     combosize++;
                     for (auto &piece: chain)
@@ -642,13 +679,14 @@ void GamePlay::findChains()
                 if(combosize>1)
                 {
                     this->statistics->addCombo(combosize);
-                    this->level->getStats()->addCombo(combosize);
+                    //this->level->getStats()->addCombo(combosize);
                     this->updateScore();
                 }
             }
         }
     }
 }
+
 void GamePlay::removePieceCallback(Piece* piece)
 {
     this->removeChild(piece);
@@ -688,7 +726,7 @@ void GamePlay::findChildChain(vector<Piece *>& list, Piece* piece, vector<Piece 
 
 int GamePlay::getRandomTileType()
 {
-    int tileType = rand() % this->level->getNumberOfPieces();
+    int tileType = rand() % this->level->getNumberOfTypes();
     // log("Next tile type: %d",tileType);
     return tileType;
 }

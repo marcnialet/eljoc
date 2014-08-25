@@ -3,14 +3,18 @@
 <plist version="1.0">
 <dict>
 	<key>DelayDecrement</key>
-	<string>0</string>
+	<integer>0</integer>
 	<key>DelayMs</key>
-	<string>1000</string>
+	<integer>5000</integer>
 	<key>Board_Height</key>
 	<integer>8</integer>
 	<key>Board_Width</key>
 	<integer>8</integer>
 	<key>Points</key>
-	<integer>10000</integer>
+	<integer>1000</integer>
+	<key>NumberOfPieces</key>
+	<integer>3</integer>
+	<key>NumberOfTypes</key>
+	<integer>8</integer>
 </dict>
 </plist>

@@ -16,6 +16,8 @@ Statistics::Statistics()
 
 void Statistics::Reset()
 {
+    log("RESET STAD");
+    this->levelStatistics = NULL;
     this->points = 0;
     this->elapsedTimeMs = 0.0;
     
@@ -42,11 +44,22 @@ void Statistics::startTime()
 {
     this->starttime = Utils::getTimeTick();
     this->endtime = Utils::getTimeTick();
+    
+    if(this->levelStatistics!=NULL)
+    {
+        this->levelStatistics->startTime();
+    }
 }
 
 void Statistics::stopTime()
 {
+    log("stopTime STAD");
     this->endtime = Utils::getTimeTick();
+    
+    if(this->levelStatistics!=NULL)
+    {
+        this->levelStatistics->stopTime();
+    }
 }
 
 void Statistics::addChain(int chainsize)
@@ -58,6 +71,11 @@ void Statistics::addChain(int chainsize)
         this->numberOfChains++;
         
         this->points += chainsize * 5;
+    }
+    
+    if(this->levelStatistics!=NULL)
+    {
+        this->levelStatistics->addChain(chainsize);
     }
 }
 
@@ -71,6 +89,11 @@ void Statistics::addCombo(int combosize)
         
         this->points += combosize * 100;
     }
+    
+    if(this->levelStatistics!=NULL)
+    {
+        this->levelStatistics->addCombo(combosize);
+    }
 }
 
 void Statistics::addPiece(int piecetype)
@@ -83,6 +106,11 @@ void Statistics::addPiece(int piecetype)
         
         this->points += 10;
     }
+    
+    if(this->levelStatistics!=NULL)
+    {
+        this->levelStatistics->addPiece(piecetype);
+    }
 }
 
 void Statistics::addPieces(vector<int> piecetypes)
@@ -90,6 +118,11 @@ void Statistics::addPieces(vector<int> piecetypes)
     for(int piecetype:piecetypes)
     {
         this->addPiece(piecetype);
+    }
+    
+    if(this->levelStatistics!=NULL)
+    {
+        this->levelStatistics->addPieces(piecetypes);
     }
 }
 

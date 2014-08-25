@@ -29,6 +29,7 @@ private:
     vector<unsigned int> chainsCounter;
     
     double starttime, endtime;
+    Statistics* levelStatistics;
     
 public:
     Statistics();
@@ -51,6 +52,9 @@ public:
     void addCombo(int combosize);
     void addPiece(int piecetype);
     void addPieces(vector<int> types);
+    
+    void setLevelStatistics(Statistics* stad) { this->levelStatistics = stad; }
+    Statistics* getLevelStadistics() { return this->levelStatistics; }
 };
 
 #endif /* defined(__eljoc__Statistics__) */
