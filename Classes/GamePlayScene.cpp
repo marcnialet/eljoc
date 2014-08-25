@@ -1,6 +1,4 @@
 #include "GamePlayScene.h"
-
-
 #include "Utils.h"
 #include "Defines.h"
 
@@ -14,20 +12,20 @@ Scene* GamePlay::createScene()
     scene->addChild(layerHUD, LAYER_Z_GAMEHUD, LAYER_TAG_GAMEHUD);
     
     auto layerGameOver = GameOverLayer::create();
-    layerGameOver->setVisible(false);
     scene->addChild(layerGameOver, LAYER_Z_GAMEOVER, LAYER_TAG_GAMEOVER);
     
     auto layerEndLevel = GameEndLevelLayer::create();
-    layerEndLevel->setVisible(false);
     scene->addChild(layerEndLevel, LAYER_Z_GAMEENDLEVEL, LAYER_TAG_GAMEENDLEVEL);
     
     auto layer = GamePlay::create();
-    scene->addChild(layer);
+    scene->addChild(layer, LAYER_Z_GAMEPLAY, LAYER_TAG_GAMEPLAY);
+    
+    layerGameOver->setVisible(false);
+    layerEndLevel->setVisible(false);
 
     return scene;
 }
 
-// on "init" you need to initialize your instance
 bool GamePlay::init()
 {
     if ( !Layer::init() )
@@ -40,8 +38,7 @@ bool GamePlay::init()
     listener->onTouchesMoved = CC_CALLBACK_2(GamePlay::onTouchesMoved, this);
     listener->onTouchesEnded = CC_CALLBACK_2(GamePlay::onTouchesEnded, this);
     listener->onTouchesCancelled = CC_CALLBACK_2(GamePlay::onTouchesCancelled, this);
-    auto dispatcher = this->getEventDispatcher();
-    dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+    this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
     
     this->swipeThreshold = Director::getInstance()->getVisibleSize().width * 0.05;
     this->currentLevel = 0;
@@ -57,16 +54,91 @@ bool GamePlay::init()
     return true;
 }
 
+void GamePlay::update(float dt)
+{
+    
+    switch(this->gameMode)
+    {
+        case GameMode::NotLoaded:
+            this->gameMode = GameMode::LoadingLevel;
+            break;
+        case GameMode::LoadingLevel:
+            this->startCurrentLevel();
+            this->gameMode = GameMode::LevelLoaded;
+            break;
+        case GameMode::LevelLoaded:
+            this->gameMode = GameMode::Running;
+            break;
+        case GameMode::Running:
+            this->runGameLoop();
+            break;
+        case GameMode::LevelDone:
+            this->getEndLevelLayer()->setVisible(true);
+            this->runEndOfLevelLoop();
+            break;
+        case GameMode::GameOver:
+            this->getGameOverLayer()->setVisible(true);
+            this->runGameOverLoop();
+            break;
+        case GameMode::Paused:
+            break;
+    }
+}
+
+void GamePlay::runGameLoop()
+{
+    if(this->isGameOver())
+    {
+        this->gameMode = GameMode::GameOver;
+    }
+    else
+    {
+        bool addNewPiece = this->mustAddPieces();
+        if(addNewPiece)
+        {
+            this->addPiecesToBoard();
+        }
+        this->processGesture();
+        this->findChains();
+        if(this->level->IsLevelDone())
+        {
+            this->gameMode = GameMode::LevelDone;
+        }
+    }
+}
+
+void GamePlay::runGameOverLoop()
+{
+    vector<int> rowcols;
+    GestureType gesture = this->getGestureType(rowcols);
+    if(gesture == GestureType::Single_Click)
+    {
+        Director::getInstance()->popScene();
+    }
+}
+
+void GamePlay::runEndOfLevelLoop()
+{
+    vector<int> rowcols;
+    GestureType gesture = this->getGestureType(rowcols);
+    if(gesture == GestureType::Single_Click)
+    {
+        this->getEndLevelLayer()->setVisible(false);
+        this->currentLevel++;
+        this->gameMode = GameMode::LoadingLevel;
+    }
+}
+
 void GamePlay::onTouchesBegan(const vector<Touch*>& touches, Event* event)
 {
     // log("onTouchesBegan");
     this->initialTouchPos.clear();
     this->currentTouchPos.clear();
     
+    this->isTouchClicked = false;
+    this->isTouchDown = true;
     for (auto &touch: touches)
     {
-        this->isTouchClicked = false;
-        this->isTouchDown = true;
         this->initialTouchPos.push_back(touch->getLocation());
         this->currentTouchPos.push_back(touch->getLocation());
     }
@@ -98,7 +170,7 @@ void GamePlay::onTouchesCancelled(const vector<Touch*>& touches, Event* event)
     // log("onTouchesCancelled");
 }
 
-GestureType GamePlay::GetGestureType(vector<int>& rowcols)
+GestureType GamePlay::getGestureType(vector<int>& rowcols)
 {
     GestureType gesture = GestureType::None;
     
@@ -130,7 +202,7 @@ GestureType GamePlay::GetGestureType(vector<int>& rowcols)
         {
             int initY = initialTouchPos[0].y;
             if(this->gameBoard->isYInBoard(initY))
-            {                
+            {
                 if(multiple)
                 {
                     gesture = GestureType::Swipe_Right_Multi;
@@ -187,40 +259,16 @@ GestureType GamePlay::GetGestureType(vector<int>& rowcols)
                 }
             }
         }
+        else if(this->isTouchClicked)
+        {
+            this->isTouchClicked = false;
+            gesture = GestureType::Single_Click;
+            // log("Single Click");
+        }
     }
+    
     
     return gesture;
-}
-
-void GamePlay::update(float dt)
-{
-    
-    switch(this->gameMode)
-    {
-        case GameMode::NotLoaded:
-            this->gameMode = GameMode::LoadingLevel;
-            break;
-        case GameMode::LoadingLevel:
-            this->startCurrentLevel();
-            this->gameMode = GameMode::LevelLoaded;
-            break;
-        case GameMode::LevelLoaded:
-            this->gameMode = GameMode::Running;
-            break;
-        case GameMode::Running:
-            this->runGameLoop();
-            break;
-        case GameMode::LevelDone:
-            this->getEndLevelLayer()->setVisible(true);
-            this->runEndOfLevelLoop();
-            break;
-        case GameMode::GameOver:
-            this->getGameOverLayer()->setVisible(true);
-            this->runGameOverLoop();
-            break;
-        case GameMode::Paused:
-            break;
-    }
 }
 
 void GamePlay::startCurrentLevel()
@@ -257,25 +305,11 @@ Level* GamePlay::loadLevel(int levelnumber)
     return l;
 }
 
-void GamePlay::runGameOverLoop()
+bool GamePlay::isGameOver()
 {
-    if(this->isTouchClicked)
-    {
-        this->isTouchClicked = false;
-        
-        Director::getInstance()->popScene();
-    }
-}
-
-void GamePlay::runEndOfLevelLoop()
-{
-    if(this->isTouchClicked)
-    {
-        this->isTouchClicked = false;
-        this->getEndLevelLayer()->setVisible(false);
-        this->currentLevel++;
-        this->gameMode = GameMode::LoadingLevel;
-    }
+    bool canaddpieces = this->vectorOfPositions.size()>0;
+    bool gameover = !canaddpieces;
+    return gameover;
 }
 
 bool GamePlay::mustAddPieces()
@@ -301,9 +335,35 @@ bool GamePlay::mustAddPieces()
 
 void GamePlay::addPiecesToBoard()
 {
-    int index = getRandomIndexPosition();
-    int pieceType = getRandomTileType();
-    Piece * piece = Piece::create(pieceType, index, this->gameBoard);
+    Piece* piece;
+    int index;
+    int pieceType;
+    vector<Piece *> neighbours;
+    for(int i=0; i<3;i++)
+    {// we try to get a new piece without neighbours (maximum 3 tries).
+        index = getRandomIndexPosition();
+        pieceType = getRandomTileType();
+        Piece * nextpiece = Piece::create(pieceType, index, this->gameBoard);
+        neighbours = this->getPieceNeighbours(nextpiece, this->mapOfPieces);
+        if(neighbours.size()<1 || i==2)
+        {
+            if(i==2)
+            {
+                log("Next piece has %d neighbours -> BUT CANNOT be discarted!!", (int)neighbours.size());
+            }
+            else
+            {
+                log("Next piece has %d neighbours -> ADDED", (int)neighbours.size());
+            }
+            piece = nextpiece;
+            break;
+        }
+        else
+        {
+            log("Next piece has %d neighbours -> DISCARTED!!", (int)neighbours.size());
+        }
+    }
+    
     this->mapOfPieces.push_back(piece);
     std::vector<int>::iterator it = this->vectorOfPositions.begin();
     this->vectorOfPositions.erase(it);
@@ -313,31 +373,8 @@ void GamePlay::addPiecesToBoard()
     this->level->getStats()->addPiece(pieceType);
     this->updateScore();
     
-    this->setPieceNeighbours(piece, this->mapOfPieces);
-}
-
-void GamePlay::runGameLoop()
-{
-    bool addNewPiece = this->mustAddPieces();
-    if(addNewPiece)
-    {
-        if(this->vectorOfPositions.size()>0)
-        {
-            this->addPiecesToBoard();
-        }else
-        {
-             this->gameMode = GameMode::GameOver;
-        }
-    }
     
-    this->processGesture();
-    
-    this->findChains();
-    
-    if(this->level->IsLevelDone())
-    {
-        this->gameMode = GameMode::LevelDone;
-    }
+    this->setPieceNeighbours(piece, neighbours);
 }
 
 void GamePlay::processGesture()
@@ -345,7 +382,7 @@ void GamePlay::processGesture()
     if (true == isTouchDown)
     {
         vector<int> rowcols;
-        GestureType gesture = GetGestureType(rowcols);
+        GestureType gesture = this->getGestureType(rowcols);
         
         if (gesture==GestureType::Swipe_Left || gesture==GestureType::Swipe_Left_Multi)
         {
@@ -502,41 +539,51 @@ void GamePlay::setNeighbours()
     {
         auto piece = pieces.back();
         pieces.pop_back();
-        this->setPieceNeighbours(piece, pieces);
+        
+        vector<Piece *> neighbours = this->getPieceNeighbours(piece, pieces);
+        this->setPieceNeighbours(piece, neighbours);
     }
 }
 
-void GamePlay::setPieceNeighbours(Piece* piece, vector<Piece *> pieces)
+vector<Piece *> GamePlay::getPieceNeighbours(Piece* piece, vector<Piece *> pieces)
 {
+    vector<Piece *> neighbours;
     int row = piece->getRow();
     int col = piece->getColumn();
     
     Piece* p1 = this->getPieceByRowColumn(pieces, row-1,col);
     if(p1!=NULL && p1->getTileType()==piece->getTileType())
     {
-        piece->addNeighbour(p1);
-        p1->addNeighbour(piece);
+        neighbours.push_back(p1);
     }
     
     Piece* p2 = this->getPieceByRowColumn(pieces, row+1,col);
     if(p2!=NULL && p2->getTileType()==piece->getTileType())
     {
-        piece->addNeighbour(p2);
-        p2->addNeighbour(piece);
+       neighbours.push_back(p2);
     }
     
     Piece* p3 = this->getPieceByRowColumn(pieces, row,col-1);
     if(p3!=NULL && p3->getTileType()==piece->getTileType())
     {
-        piece->addNeighbour(p3);
-        p3->addNeighbour(piece);
+        neighbours.push_back(p3);
     }
     
     Piece* p4 = this->getPieceByRowColumn(pieces, row,col+1);
     if(p4!=NULL && p4->getTileType()==piece->getTileType())
     {
-        piece->addNeighbour(p4);
-        p4->addNeighbour(piece);
+        neighbours.push_back(p4);
+    }
+    
+    return neighbours;
+}
+
+void GamePlay::setPieceNeighbours(Piece* piece, vector<Piece *> neighbours)
+{
+    for(Piece* neighbour:neighbours)
+    {
+        piece->addNeighbour(neighbour);
+        neighbour->addNeighbour(piece);
     }
 }
 
@@ -633,7 +680,7 @@ void GamePlay::findChildChain(vector<Piece *>& list, Piece* piece, vector<Piece 
 
 int GamePlay::getRandomTileType()
 {
-    int tileType = rand() % 4;
+    int tileType = rand() % this->level->getNumberOfPieces();
     // log("Next tile type: %d",tileType);
     return tileType;
 }

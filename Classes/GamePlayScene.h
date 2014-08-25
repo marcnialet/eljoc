@@ -47,13 +47,16 @@ private:
     std::vector<Piece*> getPiecesByColumn(int column);
     void swapPositions(int oldindex, int newindex);
     void setNeighbours();
-    void setPieceNeighbours(Piece* piece, vector<Piece *> );
+    
+    vector<Piece *> getPieceNeighbours(Piece* piece, vector<Piece *> pieces);
+    void setPieceNeighbours(Piece* piece, vector<Piece *> neighbours);
+    
     void findChains();
     void findChildChain(vector<Piece *>& list, Piece* piece, vector<Piece *>& pieces);
     
     Piece* getPieceByRowColumn(vector<Piece *> pieces, int row, int column);
     
-    GestureType GetGestureType(vector<int>& rowcols);
+    GestureType getGestureType(vector<int>& rowcols);
     Level* loadLevel(int levelnumber);
     void startCurrentLevel();
     void runGameLoop();
@@ -66,6 +69,7 @@ private:
     bool mustAddPieces();
     void addPiecesToBoard();
     void processGesture();
+    bool isGameOver();
 public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();

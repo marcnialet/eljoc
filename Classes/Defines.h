@@ -14,11 +14,10 @@
 #define LAYER_TAG_GAMEHUD       3
 #define LAYER_TAG_GAMEENDLEVEL  4
 
-#define LAYER_Z_GAMEPLAY      1
-#define LAYER_Z_GAMEOVER      2
-#define LAYER_Z_GAMEHUD       3
-#define LAYER_Z_GAMEENDLEVEL  4
-
+#define LAYER_Z_GAMEHUD       1
+#define LAYER_Z_GAMEPLAY      100
+#define LAYER_Z_GAMEOVER      200
+#define LAYER_Z_GAMEENDLEVEL  200
 
 #define kFontName "fonts/Marker Felt.ttf"
 
@@ -33,7 +32,9 @@ enum GestureType
     Swipe_Left_Multi = 5,
     Swipe_Right_Multi = 6,
     Swipe_Up_Multi = 7,
-    Swipe_Down_Multi = 8
+    Swipe_Down_Multi = 8,
+    
+    Single_Click = 9
 };
 
 enum GameMode
@@ -43,8 +44,7 @@ enum GameMode
     LevelLoaded = 2,
     Running = 3,
     GameOver = 4,
-    LevelDone = 5,
-    
+    LevelDone = 5,    
     Paused = 6,
 };
 
