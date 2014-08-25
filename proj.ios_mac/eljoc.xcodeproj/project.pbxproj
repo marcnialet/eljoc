@@ -25,6 +25,12 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
+		4927D82919AA2BEE00CB11A1 /* GameEndLevelLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4927D82719AA2BEE00CB11A1 /* GameEndLevelLayer.cpp */; };
+		4927D82A19AA2BEE00CB11A1 /* GameEndLevelLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4927D82719AA2BEE00CB11A1 /* GameEndLevelLayer.cpp */; };
+		4927D82D19AA2CD900CB11A1 /* GameOverLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4927D82B19AA2CD900CB11A1 /* GameOverLayer.cpp */; };
+		4927D82E19AA2CD900CB11A1 /* GameOverLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4927D82B19AA2CD900CB11A1 /* GameOverLayer.cpp */; };
+		4927D83119AA2CF900CB11A1 /* GameHUDLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4927D82F19AA2CF900CB11A1 /* GameHUDLayer.cpp */; };
+		4927D83219AA2CF900CB11A1 /* GameHUDLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4927D82F19AA2CF900CB11A1 /* GameHUDLayer.cpp */; };
 		493970B219A5DD8300B2C274 /* GameBoard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 493970B019A5DD8300B2C274 /* GameBoard.cpp */; };
 		493970B319A5DD8300B2C274 /* GameBoard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 493970B019A5DD8300B2C274 /* GameBoard.cpp */; };
 		495AEBCB19A6903D00C1410A /* 8x8 in Resources */ = {isa = PBXBuildFile; fileRef = 495AEBC919A6903C00C1410A /* 8x8 */; };
@@ -251,6 +257,12 @@
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		492128E619A9F5F80026EF95 /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Defines.h; path = ../Classes/Defines.h; sourceTree = "<group>"; };
+		4927D82719AA2BEE00CB11A1 /* GameEndLevelLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameEndLevelLayer.cpp; path = ../Classes/GameEndLevelLayer.cpp; sourceTree = "<group>"; };
+		4927D82819AA2BEE00CB11A1 /* GameEndLevelLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameEndLevelLayer.h; path = ../Classes/GameEndLevelLayer.h; sourceTree = "<group>"; };
+		4927D82B19AA2CD900CB11A1 /* GameOverLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameOverLayer.cpp; path = ../Classes/GameOverLayer.cpp; sourceTree = "<group>"; };
+		4927D82C19AA2CD900CB11A1 /* GameOverLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameOverLayer.h; path = ../Classes/GameOverLayer.h; sourceTree = "<group>"; };
+		4927D82F19AA2CF900CB11A1 /* GameHUDLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameHUDLayer.cpp; path = ../Classes/GameHUDLayer.cpp; sourceTree = "<group>"; };
+		4927D83019AA2CF900CB11A1 /* GameHUDLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameHUDLayer.h; path = ../Classes/GameHUDLayer.h; sourceTree = "<group>"; };
 		493970B019A5DD8300B2C274 /* GameBoard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameBoard.cpp; path = ../Classes/GameBoard.cpp; sourceTree = "<group>"; };
 		493970B119A5DD8300B2C274 /* GameBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameBoard.h; path = ../Classes/GameBoard.h; sourceTree = "<group>"; };
 		495AEBC919A6903C00C1410A /* 8x8 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = 8x8; sourceTree = "<group>"; };
@@ -379,12 +391,9 @@
 		15AA9C4015B7EC450033D6C2 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				49CB9C5619A89CE70070BD30 /* MainMenuScene.cpp */,
-				49CB9C5719A89CE70070BD30 /* MainMenuScene.h */,
+				4927D82419AA2AA700CB11A1 /* Scenes */,
 				1AFAF8B316D35DE700DB1158 /* AppDelegate.cpp */,
 				1AFAF8B416D35DE700DB1158 /* AppDelegate.h */,
-				1AFAF8B516D35DE700DB1158 /* GamePlayScene.cpp */,
-				1AFAF8B616D35DE700DB1158 /* GamePlayScene.h */,
 				495D65AD199CAEEA0045041A /* Piece.cpp */,
 				495D65AE199CAEEA0045041A /* Piece.h */,
 				49AD560019A25956000B06BD /* PieceData.cpp */,
@@ -463,6 +472,23 @@
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4927D82419AA2AA700CB11A1 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				49CB9C5619A89CE70070BD30 /* MainMenuScene.cpp */,
+				49CB9C5719A89CE70070BD30 /* MainMenuScene.h */,
+				1AFAF8B516D35DE700DB1158 /* GamePlayScene.cpp */,
+				1AFAF8B616D35DE700DB1158 /* GamePlayScene.h */,
+				4927D82F19AA2CF900CB11A1 /* GameHUDLayer.cpp */,
+				4927D83019AA2CF900CB11A1 /* GameHUDLayer.h */,
+				4927D82B19AA2CD900CB11A1 /* GameOverLayer.cpp */,
+				4927D82C19AA2CD900CB11A1 /* GameOverLayer.h */,
+				4927D82719AA2BEE00CB11A1 /* GameEndLevelLayer.cpp */,
+				4927D82819AA2BEE00CB11A1 /* GameEndLevelLayer.h */,
+			);
+			name = Scenes;
 			sourceTree = "<group>";
 		};
 		503AE0F517EB97AB00D1A890 /* Icons */ = {
@@ -741,7 +767,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				493970B219A5DD8300B2C274 /* GameBoard.cpp in Sources */,
+				4927D82D19AA2CD900CB11A1 /* GameOverLayer.cpp in Sources */,
 				49CB9C5819A89CE70070BD30 /* MainMenuScene.cpp in Sources */,
+				4927D82919AA2BEE00CB11A1 /* GameEndLevelLayer.cpp in Sources */,
 				49AD560219A25956000B06BD /* PieceData.cpp in Sources */,
 				495D65AF199CAEEA0045041A /* Piece.cpp in Sources */,
 				503AE10017EB989F00D1A890 /* AppController.mm in Sources */,
@@ -750,6 +778,7 @@
 				49CB9C6719A8D4CD0070BD30 /* Utils.cpp in Sources */,
 				1AFAF8B716D35DE700DB1158 /* AppDelegate.cpp in Sources */,
 				49CB9C6319A8D26D0070BD30 /* Statistics.cpp in Sources */,
+				4927D83119AA2CF900CB11A1 /* GameHUDLayer.cpp in Sources */,
 				503AE10117EB989F00D1A890 /* main.m in Sources */,
 				1AFAF8B816D35DE700DB1158 /* GamePlayScene.cpp in Sources */,
 			);
@@ -761,11 +790,14 @@
 			files = (
 				495D65B0199CAEEA0045041A /* Piece.cpp in Sources */,
 				5087E75717EB910900C73F5D /* AppDelegate.cpp in Sources */,
+				4927D82E19AA2CD900CB11A1 /* GameOverLayer.cpp in Sources */,
+				4927D82A19AA2BEE00CB11A1 /* GameEndLevelLayer.cpp in Sources */,
 				49CB9C6419A8D26D0070BD30 /* Statistics.cpp in Sources */,
 				49AD560319A25956000B06BD /* PieceData.cpp in Sources */,
 				49CB9C6819A8D4CD0070BD30 /* Utils.cpp in Sources */,
 				49CB9C6019A8D21A0070BD30 /* Level.cpp in Sources */,
 				5087E75817EB910900C73F5D /* GamePlayScene.cpp in Sources */,
+				4927D83219AA2CF900CB11A1 /* GameHUDLayer.cpp in Sources */,
 				493970B319A5DD8300B2C274 /* GameBoard.cpp in Sources */,
 				503AE10517EB98FF00D1A890 /* main.cpp in Sources */,
 			);

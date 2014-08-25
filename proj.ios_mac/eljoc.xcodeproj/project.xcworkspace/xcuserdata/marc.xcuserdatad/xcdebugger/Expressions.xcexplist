@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "GameBoard::convertYtoRow(int):GameBoard.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "j=(y - 150) / 60">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "GamePlay::getTimeTick():GamePlayScene.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "GamePlay::update(float):GamePlayScene.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "GamePlay::GetGestureType(int&amp;):GamePlayScene.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "initialTouchPos[0]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "GamePlay::getPiecesByRow(int):GamePlayScene.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "piece-&gt;getRow()">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
