@@ -52,10 +52,61 @@ Level* Level::createFromFile(const std::string &filename)
                 level->numberOfTypes = map["NumberOfTypes"].asInt();
             }
             
+            if(ConfigKeyExists(map, "Stones"))
+            {
+                auto stonesConfig = map["Stones"].asValueVector();
+                for(auto stone:stonesConfig)
+                {
+                    Point position =getStonePosition(stone, level->boardSize);
+                    if(position != Point::ZERO)
+                    {
+                        level->stones.push_back(position);
+                    }
+                }
+            }
+            
             return level;
         }
     }
     return nullptr;
+}
+
+Point Level::getStonePosition(Value stone, Size boardSize)
+{
+    Point position = Point::ZERO;
+    string s = (string)stone.asString();
+    int pos = s.find(";");
+    if(pos>0)
+    {
+        int x = -1;
+        try {
+            std::string sX = s.substr(0, pos);
+            x = std::stoi(sX);
+        }
+        catch (const std::invalid_argument& ia) {
+            log("Invalid argument: %s",ia.what());
+        }
+        catch (const std::exception& e) {
+            log("Exception: %s",e.what());
+        }
+        int y = -1;
+        try {
+            std::string sY = s.substr(pos+1, s.size());
+            y = std::stoi(sY);
+        }
+        catch (const std::invalid_argument& ia) {
+            log("Invalid argument: %s",ia.what());
+        }
+        catch (const std::exception& e) {
+            log("Exception: %s",e.what());
+        }
+        
+        if(x>=0 && x < boardSize.width && y>=0 && y< boardSize.height)
+        {
+           position= Point(x,y);
+        }
+    }
+    return position;
 }
 void Level::start()
 {

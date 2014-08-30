@@ -14,20 +14,30 @@ PieceData::PieceData(int indexPosition, GameBoard* gameBoard)
     this->setIndexPosition(indexPosition);
 }
 
+PieceData::PieceData(int row, int column, GameBoard* gameBoard)
+{
+    this->gameBoard = gameBoard;
+    this->setRowColumn(row, column);
+}
+
 void PieceData::setRowColumn(int r, int c)
 {
     this->column = c;
     this->row = r;
-    this->indexPosition = (c * this->gameBoard->Columns()) + r;
+    this->indexPosition = (r * this->gameBoard->Columns()) + c;
     this->position = this->CalculatePositionFromRowColumn();
 }
 
 void PieceData::setIndexPosition(int i)
 {
     this->indexPosition = i;
-    
-    this->column = this->indexPosition / this->gameBoard->Columns();
-    this->row = this->indexPosition - (this->column * this->gameBoard->Columns());
+    if(i==12)
+    {
+        string s = "";
+        
+    }
+    this->row = this->indexPosition / this->gameBoard->Columns();
+    this->column = this->indexPosition - (this->row * this->gameBoard->Columns());
     
     this->position = this->CalculatePositionFromRowColumn();
 }

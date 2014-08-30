@@ -29,6 +29,7 @@ private:
     
 public:
     PieceData(int indexPosition, GameBoard* gameBoard);
+    PieceData(int row, int column, GameBoard* gameBoard);
     
     int getRow() { return this->row; }
     int getColumn() { return this->column; }

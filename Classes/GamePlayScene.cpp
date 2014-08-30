@@ -318,6 +318,22 @@ void GamePlay::startCurrentLevel()
     {
         this->vectorOfPositions.push_back(i);
     }
+    for (int i=0; i<this->level->getStones().size(); ++i)
+    {
+        Point pos = this->level->getStones()[i];
+        Piece * piece = Piece::create(-1, pos.x, pos.y, this->gameBoard);
+        this->mapOfPieces.push_back(piece);
+        this->addChild(piece);
+        for (int k=0; k<this->vectorOfPositions.size(); ++k)
+        {            
+            if(vectorOfPositions[k]==piece->getIndexPosition())
+            {
+                std::vector<int>::iterator it = this->vectorOfPositions.begin()+piece->getIndexPosition();
+                this->vectorOfPositions.erase(it);
+                break;
+            }
+        }
+    }
 }
 
 Level* GamePlay::loadLevel(int levelnumber)
@@ -387,12 +403,11 @@ void GamePlay::addPieceToBoard()
     }
     
     this->mapOfPieces.push_back(piece);
+    this->addChild(piece);
     std::vector<int>::iterator it = this->vectorOfPositions.begin();
     this->vectorOfPositions.erase(it);
-    this->addChild(piece);
     
     this->statistics->addPiece(pieceType);
-    //this->level->getStats()->addPiece(pieceType);
     this->updateScore();
     
     this->setPieceNeighbours(piece, neighbours);
@@ -416,11 +431,18 @@ void GamePlay::processGesture()
                     int newcol = 0;
                     for (auto &row_piece: pieces)
                     {
-                        int oldindex = row_piece->getIndexPosition();
-                        row_piece->setRowColumn(row_piece->getRow(), newcol);
-                        int newindex = row_piece->getIndexPosition();
-                        this->swapPositions(oldindex, newindex);
-                        newcol++;
+                        if(row_piece->isStone())
+                        {
+                            newcol = row_piece->getColumn()+1;
+                        }
+                        else
+                        {
+                            int oldindex = row_piece->getIndexPosition();
+                            row_piece->setRowColumn(row_piece->getRow(), newcol);
+                            int newindex = row_piece->getIndexPosition();
+                            this->swapPositions(oldindex, newindex);
+                            newcol++;
+                        }
                     }
                 }
             }
@@ -440,11 +462,18 @@ void GamePlay::processGesture()
                     int newcol = this->gameBoard->Columns()-1;
                     for (auto &row_piece: pieces)
                     {
-                        int oldindex = row_piece->getIndexPosition();
-                        row_piece->setRowColumn(row_piece->getRow(), newcol);
-                        int newindex = row_piece->getIndexPosition();
-                        this->swapPositions(oldindex, newindex);
-                        newcol--;
+                        if(row_piece->isStone())
+                        {
+                            newcol = row_piece->getColumn()-1;
+                        }
+                        else
+                        {
+                            int oldindex = row_piece->getIndexPosition();
+                            row_piece->setRowColumn(row_piece->getRow(), newcol);
+                            int newindex = row_piece->getIndexPosition();
+                            this->swapPositions(oldindex, newindex);
+                            newcol--;
+                        }
                     }
                 }
             }
@@ -464,11 +493,18 @@ void GamePlay::processGesture()
                     int newcol = 0;
                     for (auto &col_piece: pieces)
                     {
-                        int oldindex = col_piece->getIndexPosition();
-                        col_piece->setRowColumn(newcol, col_piece->getColumn());
-                        int newindex = col_piece->getIndexPosition();
-                        this->swapPositions(oldindex, newindex);
-                        newcol++;
+                        if(col_piece->isStone())
+                        {
+                            newcol = col_piece->getRow()+1;
+                        }
+                        else
+                        {
+                            int oldindex = col_piece->getIndexPosition();
+                            col_piece->setRowColumn(newcol, col_piece->getColumn());
+                            int newindex = col_piece->getIndexPosition();
+                            this->swapPositions(oldindex, newindex);
+                            newcol++;
+                        }
                     }
                 }
             }
@@ -488,11 +524,18 @@ void GamePlay::processGesture()
                     int newcol = this->gameBoard->Rows()-1;
                     for (auto &col_piece: pieces)
                     {
-                        int oldindex = col_piece->getIndexPosition();
-                        col_piece->setRowColumn(newcol, col_piece->getColumn());
-                        int newindex = col_piece->getIndexPosition();
-                        this->swapPositions(oldindex, newindex);
-                        newcol--;
+                        if(col_piece->isStone())
+                        {
+                            newcol = col_piece->getRow()-1;
+                        }
+                        else
+                        {
+                            int oldindex = col_piece->getIndexPosition();
+                            col_piece->setRowColumn(newcol, col_piece->getColumn());
+                            int newindex = col_piece->getIndexPosition();
+                            this->swapPositions(oldindex, newindex);
+                            newcol--;
+                        }
                     }
                 }
             }
@@ -585,33 +628,35 @@ void GamePlay::setNeighbours()
 vector<Piece *> GamePlay::getPieceNeighbours(Piece* piece, vector<Piece *> pieces)
 {
     vector<Piece *> neighbours;
-    int row = piece->getRow();
-    int col = piece->getColumn();
-    
-    Piece* p1 = this->getPieceByRowColumn(pieces, row-1,col);
-    if(p1!=NULL && p1->getTileType()==piece->getTileType())
+    if(!piece->isStone())
     {
-        neighbours.push_back(p1);
+        int row = piece->getRow();
+        int col = piece->getColumn();
+        
+        Piece* p1 = this->getPieceByRowColumn(pieces, row-1,col);
+        if(p1!=NULL && !p1->isStone() && p1->getTileType()==piece->getTileType())
+        {
+            neighbours.push_back(p1);
+        }
+        
+        Piece* p2 = this->getPieceByRowColumn(pieces, row+1,col);
+        if(p2!=NULL && !p2->isStone() && p2->getTileType()==piece->getTileType())
+        {
+            neighbours.push_back(p2);
+        }
+        
+        Piece* p3 = this->getPieceByRowColumn(pieces, row,col-1);
+        if(p3!=NULL && !p3->isStone() && p3->getTileType()==piece->getTileType())
+        {
+            neighbours.push_back(p3);
+        }
+        
+        Piece* p4 = this->getPieceByRowColumn(pieces, row,col+1);
+        if(p4!=NULL && !p4->isStone() && p4->getTileType()==piece->getTileType())
+        {
+            neighbours.push_back(p4);
+        }
     }
-    
-    Piece* p2 = this->getPieceByRowColumn(pieces, row+1,col);
-    if(p2!=NULL && p2->getTileType()==piece->getTileType())
-    {
-       neighbours.push_back(p2);
-    }
-    
-    Piece* p3 = this->getPieceByRowColumn(pieces, row,col-1);
-    if(p3!=NULL && p3->getTileType()==piece->getTileType())
-    {
-        neighbours.push_back(p3);
-    }
-    
-    Piece* p4 = this->getPieceByRowColumn(pieces, row,col+1);
-    if(p4!=NULL && p4->getTileType()==piece->getTileType())
-    {
-        neighbours.push_back(p4);
-    }
-    
     return neighbours;
 }
 

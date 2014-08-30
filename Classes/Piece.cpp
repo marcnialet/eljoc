@@ -8,6 +8,18 @@
 
 #include "Piece.h"
 
+Piece* Piece::create(const int tileType, int row, int column, GameBoard* gameBoard)
+{
+    Piece * piece = Piece::create(getFileNameFromType(tileType, gameBoard->Rows()));
+    if(piece!= NULL)
+    {
+        piece->data = new PieceData(row, column, gameBoard);
+        piece->data->setTileType(tileType);
+        piece->setPosition(piece->data->getPosition());
+    }
+    return piece;
+}
+
 Piece* Piece::create(const int tileType, int indexPosition, GameBoard* gameBoard)
 {
     Piece * piece = Piece::create(getFileNameFromType(tileType, gameBoard->Rows()));
@@ -118,92 +130,27 @@ bool Piece::hasNeighbours()
 }
 std::string Piece::getFileNameFromType(int tileType, int rows)
 {
-    std::string filename;
-    switch (tileType)
+    string tilename;
+    string folder;
+    if(tileType == -1)
     {
-        case 0:
-            if( rows == 8 )
-            {
-                filename="8x8/blue_tile.png";
-            }
-            else
-            {
-                filename="10x10/blue_tile.png";
-            }
-            break;
-        case 1:
-            if( rows == 8 )
-            {
-                filename="8x8/green_tile.png";
-            }
-            else
-            {
-                filename="10x10/green_tile.png";
-            }
-            break;
-        case 2:
-            if( rows == 8 )
-            {
-                filename="8x8/red_tile.png";
-            }
-            else
-            {
-                filename="10x10/red_tile.png";
-            }
-            break;
-        case 3:
-            if( rows == 8 )
-            {
-                filename="8x8/yellow_tile.png";
-            }
-            else
-            {
-                filename="10x10/yellow_tile.png";
-            }
-            break;
-        case 4:
-            if( rows == 8 )
-            {
-                filename="8x8/rosa_tile.png";
-            }
-            else
-            {
-                filename="10x10/rosa_tile.png";
-            }
-            break;
-        case 5:
-            if( rows == 8 )
-            {
-                filename="8x8/marron_tile.png";
-            }
-            else
-            {
-                filename="10x10/marron_tile.png";
-            }
-            break;
-        case 6:
-            if( rows == 8 )
-            {
-                filename="8x8/orange_tile.png";
-            }
-            else
-            {
-                filename="10x10/orange_tile.png";
-            }
-            break;
-        case 7:
-            if( rows == 8 )
-            {
-                filename="8x8/magenta_tile.png";
-            }
-            else
-            {
-                filename="10x10/magenta_tile.png";
-            }
-            break;
-        default:
-            break;
+        tilename = "stone";
     }
+    else
+    {
+       tilename = "tile_" + to_string(tileType+1);
+    }
+    
+    if( rows == 8 )
+    {
+        folder = "8x8/";
+    }
+    else
+    {
+        folder = "10x10/";
+    }
+    
+    string filename = folder+tilename+".png";
     return filename;
 }
 

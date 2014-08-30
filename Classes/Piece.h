@@ -47,8 +47,11 @@ public:
     int getTileType() { return this->data->getTileType(); }
     int getIndexPosition() { return this->data->getIndexPosition(); }
     
+    bool isStone() { return this->data->getTileType() == -1; }
+    
     // Constructor
     static Piece* create(const int tileType, int indexPosition, GameBoard* gameBoard);
+    static Piece* create(const int tileType, int row, int column, GameBoard* gameBoard);
     static Piece* create(const std::string &filename);
     virtual bool init(const std::string &filename);
     
