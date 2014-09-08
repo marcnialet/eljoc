@@ -31,6 +31,9 @@ private:
     // Level goals
     unsigned int points; // Number of point to do.
     
+    int stonePercent;
+    int icePercent;
+    int firePercent;
     
    /* double elapsedTimeMs;
     unsigned int numberOfPieces;
@@ -57,5 +60,8 @@ public:
     int getNumberOfPieces() { return this->numberOfPieces; }
     int getNumberOfTypes() { return this->numberOfTypes; }
     double getPieceDelay();
+    int getStonePercent() { return this->stonePercent; }
+    int getIcePercent() { return this->icePercent; }
+    int getFirePercent() { return this->firePercent; }
 };
 #endif /* defined(__eljoc__Level__) */

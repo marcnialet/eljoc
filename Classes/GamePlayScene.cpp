@@ -295,11 +295,11 @@ GestureType GamePlay::getGestureType(vector<int>& rowcols)
 
 void GamePlay::startCurrentLevel()
 {
-    while (!this->mapOfPieces.empty())
+    while (!this->vectorOfPieces.empty())
     {
-        auto piece = this->mapOfPieces.back();
+        auto piece = this->vectorOfPieces.back();
         this->removeChild(piece);
-        this->mapOfPieces.pop_back();
+        this->vectorOfPieces.pop_back();
     }
     while (!this->vectorOfPositions.empty())
     {
@@ -309,7 +309,7 @@ void GamePlay::startCurrentLevel()
     this->level = loadLevel(this->currentLevel);
     srand ( time(NULL) );
     
-    this->gameBoard = new GameBoard(this->level->getBoardSize().width, this->level->getBoardSize().height);
+    this->gameBoard = new GameBoard(this, this->level->getBoardSize().width, this->level->getBoardSize().height);
     
     this->isTouchDown = false;
     this->start = 0;
@@ -322,13 +322,13 @@ void GamePlay::startCurrentLevel()
     {
         Point pos = this->level->getStones()[i];
         Piece * piece = Piece::create(-1, pos.x, pos.y, this->gameBoard);
-        this->mapOfPieces.push_back(piece);
+        this->vectorOfPieces.push_back(piece);
         this->addChild(piece);
         for (int k=0; k<this->vectorOfPositions.size(); ++k)
         {            
             if(vectorOfPositions[k]==piece->getIndexPosition())
             {
-                std::vector<int>::iterator it = this->vectorOfPositions.begin()+piece->getIndexPosition();
+                std::vector<int>::iterator it = this->vectorOfPositions.begin()+k;
                 this->vectorOfPositions.erase(it);
                 break;
             }
@@ -391,26 +391,38 @@ void GamePlay::addPieceToBoard()
     vector<Piece *> neighbours;
     for(int i=0; i<3;i++)
     {// we try to get a new piece without neighbours (maximum 3 tries).
-        index = getRandomIndexPosition();
-        pieceType = getRandomTileType();
+        index = this->getRandomIndexPosition();
+        pieceType = this->getRandomTileType();
+        
         Piece * nextpiece = Piece::create(pieceType, index, this->gameBoard);
-        neighbours = this->getPieceNeighbours(nextpiece, this->mapOfPieces);
-        if(neighbours.size()<1 || i==2)
+        
+        if(nextpiece->isStone())
         {
             piece = nextpiece;
             break;
         }
+        else
+        {
+            neighbours = this->getPieceNeighbours(nextpiece, this->vectorOfPieces);
+            if(neighbours.size()<1 || i==2)
+            {
+                piece = nextpiece;
+                break;
+            }
+        }
     }
     
-    this->mapOfPieces.push_back(piece);
+    this->vectorOfPieces.push_back(piece);
     this->addChild(piece);
     std::vector<int>::iterator it = this->vectorOfPositions.begin();
     this->vectorOfPositions.erase(it);
     
-    this->statistics->addPiece(pieceType);
-    this->updateScore();
-    
-    this->setPieceNeighbours(piece, neighbours);
+    if(!piece->isStone())
+    {
+        this->statistics->addPiece(pieceType);
+        this->updateScore();
+        this->setPieceNeighbours(piece, neighbours);
+    }
 }
 
 void GamePlay::processGesture()
@@ -607,14 +619,14 @@ GameEndLevelLayer* GamePlay::getEndLevelLayer()
 
 void GamePlay::setNeighbours()
 {
-    if(this->mapOfPieces.size()<=0) return;
+    if(this->vectorOfPieces.size()<=0) return;
     
-    for (auto &p: this->mapOfPieces)
+    for (auto &p: this->vectorOfPieces)
     {
         p->clearNeighbours();
     }
     
-    vector<Piece *> pieces(this->mapOfPieces);
+    vector<Piece *> pieces(this->vectorOfPieces);
     while (!pieces.empty())
     {
         auto piece = pieces.back();
@@ -673,7 +685,7 @@ void GamePlay::findChains()
 {
     vector<vector<Piece *>> chains;
     
-    vector<Piece *> pieces(this->mapOfPieces);
+    vector<Piece *> pieces(this->vectorOfPieces);
     
     while (!pieces.empty())
     {
@@ -705,7 +717,7 @@ void GamePlay::findChains()
                     combosize++;
                     for (auto &piece: chain)
                     {
-                        for( vector<Piece*>::iterator iter = this->mapOfPieces.begin(); iter != this->mapOfPieces.end(); ++iter )
+                        for( vector<Piece*>::iterator iter = this->vectorOfPieces.begin(); iter != this->vectorOfPieces.end(); ++iter )
                         {
                             if( *iter == piece )
                             {
@@ -715,7 +727,7 @@ void GamePlay::findChains()
                                 auto sequence = Sequence::create(rotate, fadeOut, callback, NULL);
                                 piece->runAction(sequence);
                                 this->vectorOfPositions.push_back(piece->getIndexPosition());
-                                this->mapOfPieces.erase( iter );
+                                this->vectorOfPieces.erase( iter );
                                 break;
                             }
                         }
@@ -769,10 +781,53 @@ void GamePlay::findChildChain(vector<Piece *>& list, Piece* piece, vector<Piece 
     }
 }
 
+bool GamePlay::getRandomStone()
+{
+    if(this->level->getStonePercent()>0)
+    {
+        int randvalue = rand() % 1000;
+        if(randvalue < this->level->getStonePercent())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool GamePlay::getRandomIce()
+{
+    if(this->level->getIcePercent()>0)
+    {
+        int randvalue = rand() % 1000;
+        if(randvalue < this->level->getIcePercent())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool GamePlay::getRandomFire()
+{
+    if(this->level->getFirePercent()>0)
+    {
+        int randvalue = rand() % 1000;
+        if(randvalue < this->level->getFirePercent())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 int GamePlay::getRandomTileType()
 {
     int tileType = rand() % this->level->getNumberOfTypes();
     // log("Next tile type: %d",tileType);
+    if(this->getRandomStone())
+    {
+        tileType = -1;
+    }
     return tileType;
 }
 
@@ -807,7 +862,7 @@ std::vector<Piece*> GamePlay::getPiecesByRow(int row)
     
     if(row<0) return rowpieces;
     if(row>this->gameBoard->Rows()-1) return rowpieces;
-    for (auto &piece: this->mapOfPieces)
+    for (auto &piece: this->vectorOfPieces)
     {
         if(piece->getRow() == row)
         {
@@ -824,7 +879,7 @@ std::vector<Piece*> GamePlay::getPiecesByColumn(int column)
     if(column<0) return colpieces;
     if(column>this->gameBoard->Columns()-1) return colpieces;
     
-    for (auto &piece: this->mapOfPieces)
+    for (auto &piece: this->vectorOfPieces)
     {
         if(piece->getColumn() == column)
         {

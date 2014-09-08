@@ -27,14 +27,15 @@ private:
     Size boardSize;
     Size boxSize;
     Size margin;
+    Rect boundingBox;
     
-    int bounding_x0;
-    int bounding_x1;
-    int bounding_y0;
-    int bounding_y1;
+    Sprite* boardSprite;
+    Layer* layer;
+    
+    Sprite* loadSprite(int size);
 public:
     
-    GameBoard(int rows, int cols);
+    GameBoard(Layer* parentlayer, int rows, int cols);
     
     bool isXInBoard(int x);
     bool isYInBoard(int y);
@@ -48,7 +49,8 @@ public:
     Size BoardSize() { return this->boardSize; }
     Size BoxSize() { return this->boxSize; }
     int NumberOfBoxes() { return numberOfBoxes; }
-    
+    Rect BoundingBox() { return this->boundingBox; }
+    Sprite* BoardSprite() { return this->boardSprite; }
     
 };
 

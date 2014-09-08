@@ -38,7 +38,6 @@ public:
     bool hasNeighbours();
     vector<Piece *> getNeighbours() { return this->neighbours; }
     
-    
     void setRowColumn(int r, int c) { this->data->setRowColumn(r,c); this->setPosition(this->data->getPosition());}
     void setIndexPosition(int i) { this->data->setIndexPosition(i); }
     
@@ -48,6 +47,11 @@ public:
     int getIndexPosition() { return this->data->getIndexPosition(); }
     
     bool isStone() { return this->data->getTileType() == -1; }
+    
+    int getStrong() { return this->data->getStrong(); }
+    void setStrong(int s);
+    void decreaseStrong();
+    
     
     // Constructor
     static Piece* create(const int tileType, int indexPosition, GameBoard* gameBoard);

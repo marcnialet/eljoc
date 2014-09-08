@@ -66,6 +66,16 @@ bool Piece::init(const std::string &filename)
     return true;
 }
 
+void Piece::setStrong(int s)
+{
+    this->data->setStrong(s);
+}
+
+void Piece::decreaseStrong()
+{
+    this->data->decreaseStrong();
+}
+
 bool Piece::onTouchBegan(Touch *touch, Event *event)
 {
     // log("onTouchBegan piece: %d", this->data->getIndexPosition());

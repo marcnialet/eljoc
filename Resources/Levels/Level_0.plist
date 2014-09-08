@@ -16,13 +16,9 @@
 	<integer>2</integer>
 	<key>NumberOfTypes</key>
 	<integer>8</integer>
+	<key>StonePercent</key>
+	<integer>-1</integer>
 	<key>Stones</key>
-	<array>
-		<string>0;4</string>
-		<string>1;4</string>
-		<string>2;4</string>
-		<string>3;4</string>
-		<string>4;4</string>
-	</array>
+	<array/>
 </dict>
 </plist>

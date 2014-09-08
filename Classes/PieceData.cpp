@@ -8,16 +8,29 @@
 
 #include "PieceData.h"
 
+
+
 PieceData::PieceData(int indexPosition, GameBoard* gameBoard)
 {
+    this->Init();
     this->gameBoard = gameBoard;
     this->setIndexPosition(indexPosition);
 }
 
 PieceData::PieceData(int row, int column, GameBoard* gameBoard)
 {
+    this->Init();
     this->gameBoard = gameBoard;
     this->setRowColumn(row, column);
+}
+
+void PieceData::Init()
+{
+    this->tileType = 0;
+    this->indexPosition = 0;
+    this->row = 0;
+    this->column = 0;
+    this->strong = 0;
 }
 
 void PieceData::setRowColumn(int r, int c)
@@ -31,7 +44,7 @@ void PieceData::setRowColumn(int r, int c)
 void PieceData::setIndexPosition(int i)
 {
     this->indexPosition = i;
-    if(i==12)
+    if(i==0)
     {
         string s = "";
         

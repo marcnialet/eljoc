@@ -14,6 +14,17 @@
          contextName = "GamePlay::getTimeTick():GamePlayScene.cpp">
       </ContextState>
       <ContextState
+         contextName = "GameBoard:GameBoard.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "origin.y - (this-&gt;boxSize.height/2)">
+            </PersistentString>
+            <PersistentString
+               value = "origin.x - (this-&gt;boxSize.width/2)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "GamePlay::update(float):GamePlayScene.cpp">
       </ContextState>
       <ContextState

@@ -52,6 +52,11 @@ Level* Level::createFromFile(const std::string &filename)
                 level->numberOfTypes = map["NumberOfTypes"].asInt();
             }
             
+            if(ConfigKeyExists(map, "StonePercent"))
+            {
+                level->stonePercent = map["StonePercent"].asInt();
+            }
+            
             if(ConfigKeyExists(map, "Stones"))
             {
                 auto stonesConfig = map["Stones"].asValueVector();
@@ -146,6 +151,9 @@ void Level::setDefaultValues()
     this->delayDecrement = 0;
     this->numberOfPieces = 1;
     this->numberOfTypes = 4;
+    this->stonePercent = -1;
+    this->icePercent = -1;
+    this->firePercent = -1;
 }
 
 bool Level::ConfigKeyExists(ValueMap map, string key)

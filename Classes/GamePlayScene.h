@@ -18,12 +18,11 @@ using namespace std;
 class GamePlay : public cocos2d::Layer
 {
 private:
-   
     GameMode gameMode;
     int currentLevel;
     Level * level;
     Statistics* statistics;
-    vector<Piece *> mapOfPieces;
+    vector<Piece *> vectorOfPieces;
     vector<int> vectorOfPositions;
     GameBoard* gameBoard;
     
@@ -75,6 +74,9 @@ private:
     void stopGame();
     void removePieceCallback(Piece* piece);
     void setGameMode(GameMode gamemode);
+    bool getRandomStone();
+    bool getRandomIce();
+    bool getRandomFire();
 public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();
