@@ -43,6 +43,7 @@
 		495D65B0199CAEEA0045041A /* Piece.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 495D65AD199CAEEA0045041A /* Piece.cpp */; };
 		49AD560219A25956000B06BD /* PieceData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49AD560019A25956000B06BD /* PieceData.cpp */; };
 		49AD560319A25956000B06BD /* PieceData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49AD560019A25956000B06BD /* PieceData.cpp */; };
+		49B33F6A19BE3F68005AFBC8 /* Settings.png in Resources */ = {isa = PBXBuildFile; fileRef = 49B33F6919BE3F68005AFBC8 /* Settings.png */; };
 		49CB9C5819A89CE70070BD30 /* MainMenuScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49CB9C5619A89CE70070BD30 /* MainMenuScene.cpp */; };
 		49CB9C5C19A8A11F0070BD30 /* playbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 49CB9C5B19A8A11F0070BD30 /* playbutton.png */; };
 		49CB9C5F19A8D21A0070BD30 /* Level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49CB9C5D19A8D21A0070BD30 /* Level.cpp */; };
@@ -273,6 +274,7 @@
 		495D65AE199CAEEA0045041A /* Piece.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Piece.h; sourceTree = "<group>"; };
 		49AD560019A25956000B06BD /* PieceData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PieceData.cpp; path = ../Classes/PieceData.cpp; sourceTree = "<group>"; };
 		49AD560119A25956000B06BD /* PieceData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PieceData.h; path = ../Classes/PieceData.h; sourceTree = "<group>"; };
+		49B33F6919BE3F68005AFBC8 /* Settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Settings.png; sourceTree = "<group>"; };
 		49CB9C5619A89CE70070BD30 /* MainMenuScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MainMenuScene.cpp; path = ../Classes/MainMenuScene.cpp; sourceTree = "<group>"; };
 		49CB9C5719A89CE70070BD30 /* MainMenuScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainMenuScene.h; path = ../Classes/MainMenuScene.h; sourceTree = "<group>"; };
 		49CB9C5B19A8A11F0070BD30 /* playbutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = playbutton.png; sourceTree = "<group>"; };
@@ -548,6 +550,7 @@
 				1AFAF8BA16D35E4900DB1158 /* CloseSelected.png */,
 				1AFAF8BB16D35E4900DB1158 /* HelloWorld.png */,
 				49CB9C5B19A8A11F0070BD30 /* playbutton.png */,
+				49B33F6919BE3F68005AFBC8 /* Settings.png */,
 			);
 			name = Resources;
 			path = ../Resources;
@@ -727,6 +730,7 @@
 				5087E78317EB970100C73F5D /* Icon-152.png in Resources */,
 				5087E77D17EB970100C73F5D /* Default-568h@2x.png in Resources */,
 				5087E78517EB970100C73F5D /* Icon-72.png in Resources */,
+				49B33F6A19BE3F68005AFBC8 /* Settings.png in Resources */,
 				1AFAF8BD16D35E4900DB1158 /* CloseSelected.png in Resources */,
 				50EF62A317ECD613001EB2F8 /* Icon-50.png in Resources */,
 				49CB9C6D19A95AD80070BD30 /* Levels in Resources */,

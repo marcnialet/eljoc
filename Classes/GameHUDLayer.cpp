@@ -1,32 +1,70 @@
 #include "GameHUDLayer.h"
+#include "GamePlayScene.h"
 #include "Defines.h"
+#include <UIButton.h>
 
 USING_NS_CC;
 
-// on "init" you need to initialize your instance
 bool GameHUDLayer::init()
 {
-    //////////////////////////////
-    // 1. super init first
     if ( !Layer::init() )
     {
         return false;
     }
+    auto visibleSize = Director::getInstance()->getVisibleSize();
     
-    this->scoreLabel = this->addLabel(kFontName, 48, "Score 0", Vec2(0.0, 1.0), Vec2(10, Director::getInstance()->getVisibleSize().height - 10));
+    this->levelLabel = this->addLabel(kFontName, 48, "Level 0", Vec2(0.0, 1.0), Vec2(100, visibleSize.height - 10));
+    this->gameScoreLabel = this->addLabel(kFontName, 48, "Score 0", Vec2(0.0, 1.0), Vec2(100, visibleSize.height - 60));
+    this->levelScoreLabel = this->addLabel(kFontName, 32, "Score 0", Vec2(0.0, 1.0), Vec2(20, 160));
+    
+    auto settingsButton = ui::Button::create("Settings.png");
+    settingsButton->setPosition(Vec2(42, visibleSize.height - 42));
+    settingsButton->addTouchEventListener(CC_CALLBACK_2(GameHUDLayer::touchEvent, this));
+    
+    this->addChild(settingsButton);
     
     return true;
 }
-void GameHUDLayer::setScore(int score)
+
+void GameHUDLayer::touchEvent(Ref *pSender, ui::Widget::TouchEventType type)
 {
-    char ScoreString[64];
-    sprintf(ScoreString, "Score %d", score);
-    this->scoreLabel->setString(ScoreString);
+    switch (type)
+    {
+        case ui::Widget::TouchEventType::BEGAN:
+            break;
+        case ui::Widget::TouchEventType::MOVED:
+            break;
+        case ui::Widget::TouchEventType::ENDED:
+            break;
+        case ui::Widget::TouchEventType::CANCELED:
+            break;
+        default:
+            break;
+    }
 }
 
+void GameHUDLayer::setLevelScore(int score)
+{
+    char scoreString[64];
+    sprintf(scoreString, "Score %d", score);
+    this->levelScoreLabel->setString(scoreString);
+}
 
-Label* GameHUDLayer::addLabel(const std::string fontname, const float fontSize, const char *text,
-                          const cocos2d::Vec2 anchor, const cocos2d::Vec2 position)
+void GameHUDLayer::setGameScore(int score)
+{
+    char scoreString[64];
+    sprintf(scoreString, "Score %d", score);
+    this->gameScoreLabel->setString(scoreString);
+}
+
+void GameHUDLayer::setLevel(int level)
+{
+    char levelString[64];
+    sprintf(levelString, "Level %d", level);
+    this->levelLabel->setString(levelString);
+}
+
+Label* GameHUDLayer::addLabel(const std::string fontname, const float fontSize, const char *text, const cocos2d::Vec2 anchor, const cocos2d::Vec2 position)
 {
     TTFConfig config(kFontName, fontSize);
 	Label *theLabel = Label::createWithTTF(config, text);

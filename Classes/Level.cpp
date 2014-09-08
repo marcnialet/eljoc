@@ -7,11 +7,23 @@
 //
 
 #include "Level.h"
+#include "Statistics.h"
 
 Level::Level()
 {
     this->statistics = new Statistics();
     this->setDefaultValues();
+}
+
+Level* Level::createFromLevelNumber(const int levelnumber)
+{
+    string filename = "Levels/Level_"+to_string(levelnumber)+".plist";
+    Level* level = createFromFile(filename);
+    if(level!=NULL)
+    {
+        level->levelNumber = levelnumber;
+    }
+    return level;
 }
 
 Level* Level::createFromFile(const std::string &filename)

@@ -13,12 +13,19 @@
 
 #include "cocos2d.h"
 
+
+
 using namespace std;
 using namespace cocos2d;
+
+class GameHUDLayer;
+class Level;
 
 class Statistics
 {
 private:
+    GameHUDLayer* layer;
+    
     unsigned int points;
     double elapsedTimeMs;
     unsigned int numberOfPieces;
@@ -29,12 +36,15 @@ private:
     vector<unsigned int> chainsCounter;
     
     double starttime, endtime;
-    Statistics* levelStatistics;
+    Level* level;
     
+    void updateScore();
+    void updateLevel();
 public:
     Statistics();
+    Statistics(GameHUDLayer* parentlayer);
     
-    void Reset();
+    void init();
     
     void startTime();
     void stopTime();
@@ -53,8 +63,10 @@ public:
     void addPiece(int piecetype);
     void addPieces(vector<int> types);
     
-    void setLevelStatistics(Statistics* stad) { this->levelStatistics = stad; }
-    Statistics* getLevelStadistics() { return this->levelStatistics; }
+    //void setLevelStatistics(Statistics* stad) { this->levelStatistics = stad; }
+    //Statistics* getLevelStadistics() { return this->levelStatistics; }
+    
+    void setLevel(Level* l);
 };
 
 #endif /* defined(__eljoc__Statistics__) */

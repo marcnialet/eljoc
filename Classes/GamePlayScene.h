@@ -61,7 +61,6 @@ private:
     void runGameLoop();
     void runGameOverLoop();
     void runEndOfLevelLoop();
-    void updateScore();
     GameHUDLayer* getHUDLayer();
     GameOverLayer* getGameOverLayer();
     GameEndLevelLayer* getEndLevelLayer();
@@ -88,7 +87,7 @@ public:
     void onTouchesMoved(const vector<Touch*>& touches, Event* event);
     void onTouchesEnded(const vector<Touch*>& touches, Event* event);
     void onTouchesCancelled(const vector<Touch*>& touches, Event* event);
-    
+
     
     // implement the "static create()" method manually
     CREATE_FUNC(GamePlay);   

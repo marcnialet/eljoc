@@ -7,17 +7,25 @@
 //
 
 #include "Statistics.h"
+#include "Level.h"
+#include "GameHUDLayer.h"
 #include "Utils.h"
 
 Statistics::Statistics()
 {
-    this->Reset();
+    this->init();
 }
 
-void Statistics::Reset()
+Statistics::Statistics(GameHUDLayer* parentlayer)
 {
-    log("RESET STAD");
-    this->levelStatistics = NULL;
+    this->init();
+    this->layer = parentlayer;
+}
+
+void Statistics::init()
+{
+    this->level = NULL;
+    this->layer = NULL;
     this->points = 0;
     this->elapsedTimeMs = 0.0;
     
@@ -40,30 +48,40 @@ void Statistics::Reset()
     this->endtime = 0;
 }
 
+void Statistics::setLevel(Level* l)
+{
+    this->level = l;
+    this->updateLevel();
+}
+
 void Statistics::startTime()
 {
     this->starttime = Utils::getTimeTick();
     this->endtime = Utils::getTimeTick();
     
-    if(this->levelStatistics!=NULL)
+    if(this->level!=NULL && this->level->getStats()!=NULL)
     {
-        this->levelStatistics->startTime();
+        this->level->getStats()->startTime();
     }
 }
 
 void Statistics::stopTime()
 {
-    log("stopTime STAD");
     this->endtime = Utils::getTimeTick();
     
-    if(this->levelStatistics!=NULL)
+    if(this->level!=NULL && this->level->getStats()!=NULL)
     {
-        this->levelStatistics->stopTime();
+        this->level->getStats()->stopTime();
     }
 }
 
 void Statistics::addChain(int chainsize)
 {
+    if(this->level!=NULL && this->level->getStats()!=NULL)
+    {
+        this->level->getStats()->addChain(chainsize);
+    }
+    
     if(chainsize>=0 && chainsize<this->chainsCounter.size())
     {
         int counter = this->chainsCounter[chainsize];
@@ -71,16 +89,17 @@ void Statistics::addChain(int chainsize)
         this->numberOfChains++;
         
         this->points += chainsize * 5;
-    }
-    
-    if(this->levelStatistics!=NULL)
-    {
-        this->levelStatistics->addChain(chainsize);
+        this->updateScore();
     }
 }
 
 void Statistics::addCombo(int combosize)
 {
+    if(this->level!=NULL && this->level->getStats()!=NULL)
+    {
+        this->level->getStats()->addCombo(combosize);
+    }
+    
     if(combosize>=0 && combosize<this->combosCounter.size())
     {
         int counter = this->combosCounter[combosize];
@@ -88,16 +107,17 @@ void Statistics::addCombo(int combosize)
         this->numberOfCombos++;
         
         this->points += combosize * 100;
-    }
-    
-    if(this->levelStatistics!=NULL)
-    {
-        this->levelStatistics->addCombo(combosize);
+        this->updateScore();
     }
 }
 
 void Statistics::addPiece(int piecetype)
 {
+    if(this->level!=NULL && this->level->getStats()!=NULL)
+    {
+        this->level->getStats()->addPiece(piecetype);
+    }
+    
     if(piecetype>=0 && piecetype<this->piecesCounter.size())
     {
         int counter = this->piecesCounter[piecetype];
@@ -105,11 +125,7 @@ void Statistics::addPiece(int piecetype)
         this->numberOfPieces++;
         
         this->points += 10;
-    }
-    
-    if(this->levelStatistics!=NULL)
-    {
-        this->levelStatistics->addPiece(piecetype);
+        this->updateScore();
     }
 }
 
@@ -120,9 +136,9 @@ void Statistics::addPieces(vector<int> piecetypes)
         this->addPiece(piecetype);
     }
     
-    if(this->levelStatistics!=NULL)
+    if(this->level!=NULL && this->level->getStats()!=NULL)
     {
-        this->levelStatistics->addPieces(piecetypes);
+        this->level->getStats()->addPieces(piecetypes);
     }
 }
 
@@ -177,4 +193,25 @@ unsigned int Statistics::getNumberOfChainsOfType(int chainsize)
         return this->chainsCounter[chainsize];
     }
     return 0;
+}
+
+void Statistics::updateLevel()
+{
+    if(this->layer!=NULL && this->level!=NULL)
+    {
+        this->layer->setLevel(this->level->getLevelNumber());
+    }
+}
+void Statistics::updateScore()
+{
+    if(this->layer!=NULL && this->level!=NULL)
+    {
+        this->layer->setGameScore(this->getPoints());
+        Statistics* levelstats = this->level->getStats();
+        if(levelstats!=NULL)
+        {
+            unsigned int levelpoints = levelstats->getPoints();
+            this->layer->setLevelScore(levelpoints);
+        }
+    }
 }

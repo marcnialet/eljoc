@@ -11,11 +11,11 @@
 	<key>Board_Width</key>
 	<integer>8</integer>
 	<key>Points</key>
-	<real>10000</real>
+	<integer>3000</integer>
 	<key>NumberOfPieces</key>
-	<integer>2</integer>
+	<integer>1</integer>
 	<key>NumberOfTypes</key>
-	<integer>8</integer>
+	<integer>4</integer>
 	<key>StonePercent</key>
 	<integer>-1</integer>
 	<key>Stones</key>

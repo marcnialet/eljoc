@@ -12,16 +12,19 @@
 #include <iostream>
 
 #include "cocos2d.h"
-#include "Statistics.h"
+
 
 using namespace std;
 using namespace cocos2d;
+
+class Statistics;
 
 class Level
 {
 private:
     Statistics* statistics;
     
+    int levelNumber;
     Size boardSize;         // size of the board
     int numberOfPieces;     // number of pieces to add to the board each delay
     int numberOfTypes;      // number of piece's types.
@@ -48,12 +51,14 @@ private:
     static Point getStonePosition(Value stone, Size boardSize);
 public:
     static Level* createFromFile(const std::string &filename);
+    static Level* createFromLevelNumber(const int levelnumber);
     
     Level();
     void start();
     void stop();
     bool IsLevelDone();
     
+    int getLevelNumber() { return this->levelNumber; }
     vector<Point> getStones() { return this->stones; }
     Statistics* getStats() { return this->statistics; }
     Size getBoardSize() { return this->boardSize; }

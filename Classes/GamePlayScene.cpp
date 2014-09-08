@@ -47,7 +47,6 @@ bool GamePlay::init()
     this->isTouchDown = false;
     this->start = 0;
     this->end = 0;
-    this->statistics = new Statistics();
     
     this->scheduleUpdate();
     
@@ -306,6 +305,11 @@ void GamePlay::startCurrentLevel()
         this->vectorOfPositions.pop_back();
     }
     
+    if(this->statistics==NULL)
+    {
+        this->statistics = new Statistics(this->getHUDLayer());
+    }
+    
     this->level = loadLevel(this->currentLevel);
     srand ( time(NULL) );
     
@@ -337,11 +341,10 @@ void GamePlay::startCurrentLevel()
 }
 
 Level* GamePlay::loadLevel(int levelnumber)
-{
-    string filename = "Levels/Level_"+to_string(levelnumber)+".plist";
-    auto l = Level::createFromFile(filename);
-    this->statistics->setLevelStatistics(l->getStats());
-    return l;
+{    
+    auto level = Level::createFromLevelNumber(levelnumber);
+    this->statistics->setLevel(level);
+    return level;
 }
 
 bool GamePlay::isGameOver()
@@ -420,7 +423,6 @@ void GamePlay::addPieceToBoard()
     if(!piece->isStone())
     {
         this->statistics->addPiece(pieceType);
-        this->updateScore();
         this->setPieceNeighbours(piece, neighbours);
     }
 }
@@ -575,15 +577,6 @@ void GamePlay::stopGame()
     }
 }
 
-void GamePlay::updateScore()
-{
-    GameHUDLayer* layerHUD = this->getHUDLayer();
-    if(layerHUD!=nullptr)
-    {
-         layerHUD->setScore(this->statistics->getLevelStadistics()->getPoints());
-    }
-}
-
 GameHUDLayer* GamePlay::getHUDLayer()
 {
     GameHUDLayer* layerHUD;
@@ -712,8 +705,6 @@ void GamePlay::findChains()
                 if(chain.size()>=3)
                 {
                     this->statistics->addChain(chain.size());
-                    //this->level->getStats()->addChain(chain.size());
-                    this->updateScore();
                     combosize++;
                     for (auto &piece: chain)
                     {
@@ -722,10 +713,16 @@ void GamePlay::findChains()
                             if( *iter == piece )
                             {
                                 auto callback = CallFunc::create(CC_CALLBACK_0(GamePlay::removePieceCallback, this, piece));
+                                // auto fadeOut = FadeOut::create(0.100);
+                                // auto rotate = RotateBy::create(0.150, 720);
+                                // auto sequence = Sequence::create(rotate, fadeOut, callback, NULL);
+                                auto scale = ScaleTo::create(0.500,0.1);
                                 auto fadeOut = FadeOut::create(0.100);
-                                auto rotate = RotateBy::create(0.150, 720);
-                                auto sequence = Sequence::create(rotate, fadeOut, callback, NULL);
+                                //auto scale = ScaleBy::create(0.700,0);
+                                auto sequence = Sequence::create(scale, fadeOut, callback, NULL);
+                                
                                 piece->runAction(sequence);
+                                
                                 this->vectorOfPositions.push_back(piece->getIndexPosition());
                                 this->vectorOfPieces.erase( iter );
                                 break;
@@ -736,8 +733,6 @@ void GamePlay::findChains()
                 if(combosize>1)
                 {
                     this->statistics->addCombo(combosize);
-                    //this->level->getStats()->addCombo(combosize);
-                    this->updateScore();
                 }
             }
         }
