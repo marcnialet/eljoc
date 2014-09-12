@@ -11,6 +11,8 @@ bool GameHUDLayer::init()
     {
         return false;
     }
+    this->layerGamePlay = NULL;
+    
     auto visibleSize = Director::getInstance()->getVisibleSize();
     
     this->levelLabel = this->addLabel(kFontName, 48, "Level 0", Vec2(0.0, 1.0), Vec2(100, visibleSize.height - 10));
@@ -35,12 +37,34 @@ void GameHUDLayer::touchEvent(Ref *pSender, ui::Widget::TouchEventType type)
         case ui::Widget::TouchEventType::MOVED:
             break;
         case ui::Widget::TouchEventType::ENDED:
+            this->showSettings();
             break;
         case ui::Widget::TouchEventType::CANCELED:
             break;
         default:
             break;
     }
+}
+void GameHUDLayer::showSettings()
+{
+    this->getGamePlayLayer();
+    if(this->layerGamePlay!=NULL)
+    {
+        this->layerGamePlay->showSettings();
+    }
+}
+
+GamePlay* GameHUDLayer::getGamePlayLayer()
+{
+    if(this->layerGamePlay==NULL)
+    {
+        auto parentscene = Director::getInstance()->getRunningScene();
+        if(parentscene!=nullptr)
+        {
+            this->layerGamePlay = (GamePlay*)parentscene->getChildByTag(LAYER_TAG_GAMEPLAY);
+        }
+    }
+    return this->layerGamePlay;
 }
 
 void GameHUDLayer::setLevelScore(int score)

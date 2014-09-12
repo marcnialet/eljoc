@@ -1,29 +1,21 @@
 #include "MainMenuScene.h"
 #include "GamePlayScene.h"
+#include "SwipeLayer.h"
+#include "Menu1Scene.h"
 
 USING_NS_CC;
 
-Scene* MainMenu::createScene()
+Scene* MainMenuLayer::createScene()
 {
-    // 'scene' is an autorelease object
     auto scene = Scene::create();
-    
-    // 'layer' is an autorelease object
-    auto layer = MainMenu::create();
-
-    // add layer as a child to scene
+    auto layer = MainMenuLayer::create();
     scene->addChild(layer);
-
-    // return the scene
     return scene;
 }
 
-// on "init" you need to initialize your instance
-bool MainMenu::init()
+bool MainMenuLayer::init()
 {
-    //////////////////////////////
-    // 1. super init first
-    if ( !Layer::init() )
+    if( !CCLayerColor::initWithColor(Color4B(255, 255, 255, 255)) )
     {
         return false;
     }
@@ -31,47 +23,39 @@ bool MainMenu::init()
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-    /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
+    auto playbuttonItem = MenuItemImage::create("button_play.png", "button_play.png", CC_CALLBACK_1(MainMenuLayer::onMenuPlayButton, this));
+    auto tutorialbuttonItem = MenuItemImage::create("button_tutorial.png", "button_tutorial.png", CC_CALLBACK_1(MainMenuLayer::onMenuTutorialButton, this));
+    auto menubuttonItem = MenuItemImage::create("button_menu.png", "button_menu.png", CC_CALLBACK_1(MainMenuLayer::onMenuMenuButton, this));
+	
 
-    // add a "close" icon to exit the progress. it's an autorelease object
-    auto closeItem = MenuItemImage::create(
-                                           "playbutton.png",
-                                           "playbutton.png",
-                                           CC_CALLBACK_1(MainMenu::menuPlayCallback, this));
-    
-	closeItem->setPosition(Vec2(origin.x + visibleSize.width/2,
-                                origin.y + visibleSize.height/2 - closeItem->getContentSize().height/2));
-
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Vec2::ZERO);
+    auto menu = Menu::create(playbuttonItem, tutorialbuttonItem, menubuttonItem, NULL);
+    menu->alignItemsVerticallyWithPadding(20);
+    menu->setPosition(Vec2(origin.x + visibleSize.width/2,
+                           origin.y + visibleSize.height/2 - playbuttonItem->getContentSize().height/2));
     this->addChild(menu, 1);
-
-    /////////////////////////////
-    // 3. add your codes below...
-
-    // add a label shows "Hello World"
-    // create and initialize a label
-    
-    auto label = LabelTTF::create("Main Menu", "Arial", 24);
-    
-    // position the label on the center of the screen
-    label->setPosition(Vec2(origin.x + visibleSize.width/2,
-                            origin.y + visibleSize.height - label->getContentSize().height));
-
-    // add the label as a child to this layer
-    this->addChild(label, 1);
     
     return true;
 }
 
 
-void MainMenu::menuPlayCallback(Ref* pSender)
+void MainMenuLayer::onMenuPlayButton(Ref* pSender)
 {
      auto scene = GamePlay::createScene();
     
     Director::getInstance()->pushScene(scene);
 
+}
+
+void MainMenuLayer::onMenuTutorialButton(Ref* pSender)
+{
+    
+    
+}
+
+void MainMenuLayer::onMenuMenuButton(Ref* pSender)
+{
+    auto scene = Menu1Scene::createScene();
+    
+    Director::getInstance()->pushScene(scene);
+    
 }

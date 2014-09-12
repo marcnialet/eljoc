@@ -1,22 +1,18 @@
-#ifndef __MAINMENU_SCENE_H__
-#define __MAINMENU_SCENE_H__
+#ifndef __MAINMENULAYER_SCENE_H__
+#define __MAINMENULAYER_SCENE_H__
 
 #include "cocos2d.h"
 
-class MainMenu : public cocos2d::Layer
+class MainMenuLayer : public cocos2d::LayerColor
 {
 public:
-    // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();
-
-    // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
-    virtual bool init();  
     
-    // a selector callback
-    void menuPlayCallback(cocos2d::Ref* pSender);
-    
-    // implement the "static create()" method manually
-    CREATE_FUNC(MainMenu);
+    virtual bool init();
+    void onMenuPlayButton(cocos2d::Ref* pSender);
+    void onMenuTutorialButton(Ref* pSender);
+    void onMenuMenuButton(Ref* pSender);
+    CREATE_FUNC(MainMenuLayer);
 };
 
-#endif // __MAINMENU_SCENE_H__
+#endif // __MAINMENULAYER_SCENE_H__

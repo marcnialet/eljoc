@@ -2,6 +2,11 @@
 #include "Utils.h"
 #include "Defines.h"
 
+#include "GameOverLayer.h"
+#include "GameEndLevelLayer.h"
+#include "GameHUDLayer.h"
+#include "GameSettingsLayer.h"
+
 USING_NS_CC;
 
 Scene* GamePlay::createScene()
@@ -17,11 +22,15 @@ Scene* GamePlay::createScene()
     auto layerEndLevel = GameEndLevelLayer::create();
     scene->addChild(layerEndLevel, LAYER_Z_GAMEENDLEVEL, LAYER_TAG_GAMEENDLEVEL);
     
+    auto layerGameSettings = GameSettingsLayer::create();
+    scene->addChild(layerGameSettings, LAYER_Z_GAMESETTINGS, LAYER_TAG_GAMESETTINGS);
+    
     auto layer = GamePlay::create();
     scene->addChild(layer, LAYER_Z_GAMEPLAY, LAYER_TAG_GAMEPLAY);
     
     layerGameOver->setVisible(false);
     layerEndLevel->setVisible(false);
+    layerGameSettings->setVisible(false);
 
     return scene;
 }
@@ -51,6 +60,18 @@ bool GamePlay::init()
     this->scheduleUpdate();
     
     return true;
+}
+
+void GamePlay::closeSettings()
+{
+    this->getSettingsLayer()->setVisible(false);
+    this->setGameMode(GameMode::Running);
+}
+
+void GamePlay::showSettings()
+{
+    this->getSettingsLayer()->setVisible(true);
+    this->setGameMode(GameMode::Paused);
 }
 
 void GamePlay::update(float dt)
@@ -300,6 +321,14 @@ void GamePlay::startCurrentLevel()
         this->removeChild(piece);
         this->vectorOfPieces.pop_back();
     }
+    
+    while (!this->vectorOfGlasses.empty())
+    {
+        auto piece = this->vectorOfGlasses.back();
+        this->removeChild(piece);
+        this->vectorOfGlasses.pop_back();
+    }
+    
     while (!this->vectorOfPositions.empty())
     {
         this->vectorOfPositions.pop_back();
@@ -322,6 +351,7 @@ void GamePlay::startCurrentLevel()
     {
         this->vectorOfPositions.push_back(i);
     }
+    
     for (int i=0; i<this->level->getStones().size(); ++i)
     {
         Point pos = this->level->getStones()[i];
@@ -337,6 +367,14 @@ void GamePlay::startCurrentLevel()
                 break;
             }
         }
+    }
+    
+    for (int i=0; i<this->level->getGlasses().size(); ++i)
+    {
+        Point pos = this->level->getGlasses()[i];
+        Piece * piece = Piece::create(-2, pos.x, pos.y, this->gameBoard);
+        this->vectorOfGlasses.push_back(piece);
+        this->addChild(piece, 1000);
     }
 }
 
@@ -577,37 +615,56 @@ void GamePlay::stopGame()
     }
 }
 
+GameSettingsLayer* GamePlay::getSettingsLayer()
+{
+    if(this->layerGameSettings==NULL)
+    {
+        auto parentscene = Director::getInstance()->getRunningScene();
+        if(parentscene!=nullptr)
+        {
+            this->layerGameSettings = (GameSettingsLayer*)parentscene->getChildByTag(LAYER_TAG_GAMESETTINGS);
+        }
+    }
+    return this->layerGameSettings;
+}
+
 GameHUDLayer* GamePlay::getHUDLayer()
 {
-    GameHUDLayer* layerHUD;
-    auto parentscene = Director::getInstance()->getRunningScene();
-    if(parentscene!=nullptr)
+    if(this->layerHUD==NULL)
     {
-        layerHUD = (GameHUDLayer*)parentscene->getChildByTag(LAYER_TAG_GAMEHUD);
+        auto parentscene = Director::getInstance()->getRunningScene();
+        if(parentscene!=nullptr)
+        {
+            this->layerHUD = (GameHUDLayer*)parentscene->getChildByTag(LAYER_TAG_GAMEHUD);
+        }
     }
-    return layerHUD;
+    return this->layerHUD;
 }
 
 GameOverLayer* GamePlay::getGameOverLayer()
 {
-    GameOverLayer* layerGameOver;
-    auto parentscene = Director::getInstance()->getRunningScene();
-    if(parentscene!=nullptr)
+    if(this->layerGameOver==NULL)
     {
-        layerGameOver = (GameOverLayer*)parentscene->getChildByTag(LAYER_TAG_GAMEOVER);
+        auto parentscene = Director::getInstance()->getRunningScene();
+        if(parentscene!=nullptr)
+        {
+            this->layerGameOver = (GameOverLayer*)parentscene->getChildByTag(LAYER_TAG_GAMEOVER);
+        }
     }
-    return layerGameOver;
+    return this->layerGameOver;
 }
 
 GameEndLevelLayer* GamePlay::getEndLevelLayer()
 {
-    GameEndLevelLayer* layerEndLevel;
-    auto parentscene = Director::getInstance()->getRunningScene();
-    if(parentscene!=nullptr)
+    if(this->layerEndLevel==NULL)
     {
-        layerEndLevel = (GameEndLevelLayer*)parentscene->getChildByTag(LAYER_TAG_GAMEENDLEVEL);
+        auto parentscene = Director::getInstance()->getRunningScene();
+        if(parentscene!=nullptr)
+        {
+            this->layerEndLevel = (GameEndLevelLayer*)parentscene->getChildByTag(LAYER_TAG_GAMEENDLEVEL);
+        }
     }
-    return layerEndLevel;
+    return this->layerEndLevel;
 }
 
 void GamePlay::setNeighbours()
@@ -712,15 +769,25 @@ void GamePlay::findChains()
                         {
                             if( *iter == piece )
                             {
+                                for (int k=0; k<this->vectorOfGlasses.size();k++)
+                                {
+                                    auto glasspiece = vectorOfGlasses[k];
+                                    if(glasspiece->getIndexPosition()==piece->getIndexPosition())
+                                    {
+                                        glasspiece->decreaseStrong();
+                                        if(glasspiece->getStrong()==0)
+                                        {
+                                            this->vectorOfGlasses.erase (vectorOfGlasses.begin()+k);
+                                            this->removeChild(glasspiece);
+                                            break;
+                                        }
+                                    }
+                                }
+                                
                                 auto callback = CallFunc::create(CC_CALLBACK_0(GamePlay::removePieceCallback, this, piece));
-                                // auto fadeOut = FadeOut::create(0.100);
-                                // auto rotate = RotateBy::create(0.150, 720);
-                                // auto sequence = Sequence::create(rotate, fadeOut, callback, NULL);
                                 auto scale = ScaleTo::create(0.500,0.1);
                                 auto fadeOut = FadeOut::create(0.100);
-                                //auto scale = ScaleBy::create(0.700,0);
                                 auto sequence = Sequence::create(scale, fadeOut, callback, NULL);
-                                
                                 piece->runAction(sequence);
                                 
                                 this->vectorOfPositions.push_back(piece->getIndexPosition());

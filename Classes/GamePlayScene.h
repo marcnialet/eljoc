@@ -9,9 +9,12 @@
 #include "GameBoard.h"
 #include "Level.h"
 #include "Statistics.h"
-#include "GameOverLayer.h"
-#include "GameEndLevelLayer.h"
-#include "GameHUDLayer.h"
+
+
+class GameHUDLayer;
+class GameOverLayer;
+class GameEndLevelLayer;
+class GameSettingsLayer;
 
 using namespace std;
 
@@ -22,6 +25,7 @@ private:
     int currentLevel;
     Level * level;
     Statistics* statistics;
+    vector<Piece *> vectorOfGlasses;
     vector<Piece *> vectorOfPieces;
     vector<int> vectorOfPositions;
     GameBoard* gameBoard;
@@ -42,6 +46,11 @@ private:
     vector<Point> currentTouchPos;
     bool isTouchClicked;
     
+    GameHUDLayer* layerHUD;
+    GameOverLayer* layerGameOver;
+    GameEndLevelLayer* layerEndLevel;
+    GameSettingsLayer* layerGameSettings;
+    
     std::vector<Piece*> getPiecesByRow(int row);
     std::vector<Piece*> getPiecesByColumn(int column);
     void swapPositions(int oldindex, int newindex);
@@ -61,9 +70,12 @@ private:
     void runGameLoop();
     void runGameOverLoop();
     void runEndOfLevelLoop();
+    
     GameHUDLayer* getHUDLayer();
     GameOverLayer* getGameOverLayer();
     GameEndLevelLayer* getEndLevelLayer();
+    GameSettingsLayer* getSettingsLayer();
+    
     bool mustAddPieces();
     void addPiecesToBoard();
     void addPieceToBoard();
@@ -76,6 +88,11 @@ private:
     bool getRandomStone();
     bool getRandomIce();
     bool getRandomFire();
+    
+    void onTouchesBegan(const vector<Touch*>& touches, Event* event);
+    void onTouchesMoved(const vector<Touch*>& touches, Event* event);
+    void onTouchesEnded(const vector<Touch*>& touches, Event* event);
+    void onTouchesCancelled(const vector<Touch*>& touches, Event* event);
 public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene();
@@ -83,12 +100,8 @@ public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();
     
-    void onTouchesBegan(const vector<Touch*>& touches, Event* event);
-    void onTouchesMoved(const vector<Touch*>& touches, Event* event);
-    void onTouchesEnded(const vector<Touch*>& touches, Event* event);
-    void onTouchesCancelled(const vector<Touch*>& touches, Event* event);
-
-    
+    void showSettings();
+    void closeSettings();
     // implement the "static create()" method manually
     CREATE_FUNC(GamePlay);   
 };

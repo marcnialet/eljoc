@@ -15,6 +15,7 @@ Piece* Piece::create(const int tileType, int row, int column, GameBoard* gameBoa
     {
         piece->data = new PieceData(row, column, gameBoard);
         piece->data->setTileType(tileType);
+        piece->data->setStrong(tileType==-2 ? 3:0);
         piece->setPosition(piece->data->getPosition());
     }
     return piece;
@@ -27,6 +28,7 @@ Piece* Piece::create(const int tileType, int indexPosition, GameBoard* gameBoard
     {
         piece->data = new PieceData(indexPosition, gameBoard);
         piece->data->setTileType(tileType);
+        piece->data->setStrong(tileType==-2 ? 3:0);
         piece->setPosition(piece->data->getPosition());
     }
     return piece;
@@ -145,6 +147,10 @@ std::string Piece::getFileNameFromType(int tileType, int rows)
     if(tileType == -1)
     {
         tilename = "stone";
+    }
+    else if(tileType == -2)
+    {
+        tilename = "ice_100";
     }
     else
     {

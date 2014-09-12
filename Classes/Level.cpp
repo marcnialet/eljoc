@@ -74,7 +74,7 @@ Level* Level::createFromFile(const std::string &filename)
                 auto stonesConfig = map["Stones"].asValueVector();
                 for(auto stone:stonesConfig)
                 {
-                    Point position =getStonePosition(stone, level->boardSize);
+                    Point position =getPiecePosition(stone, level->boardSize);
                     if(position != Point::ZERO)
                     {
                         level->stones.push_back(position);
@@ -82,16 +82,30 @@ Level* Level::createFromFile(const std::string &filename)
                 }
             }
             
+            if(ConfigKeyExists(map, "Glasses"))
+            {
+                auto glassesConfig = map["Glasses"].asValueVector();
+                for(auto glass:glassesConfig)
+                {
+                    Point position =getPiecePosition(glass, level->boardSize);
+                    if(position != Point::ZERO)
+                    {
+                        level->glasses.push_back(position);
+                    }
+                }
+            }
+
+            
             return level;
         }
     }
     return nullptr;
 }
 
-Point Level::getStonePosition(Value stone, Size boardSize)
+Point Level::getPiecePosition(Value piece, Size boardSize)
 {
     Point position = Point::ZERO;
-    string s = (string)stone.asString();
+    string s = (string)piece.asString();
     int pos = s.find(";");
     if(pos>0)
     {

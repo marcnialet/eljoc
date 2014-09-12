@@ -39,11 +39,15 @@ public:
     int getTileType() { return this->tileType; }
     int getIndexPosition() { return this->indexPosition; }
     Point getPosition() { return this->position; }
-    void setTileType(int t) { this->tileType = t; }
-    
+    void setTileType(int t) { this->tileType = t; }    
     int getStrong() { return this->strong; }
     void setStrong(int s) { this->strong = s; }
-    void decreaseStrong() { if(this->strong>0) this->strong = --this->strong; }
+    void decreaseStrong() {
+        if(this->strong>0)
+        {
+          this->strong = --this->strong;
+        }
+    }
     
     void setRowColumn(int r, int c);
     void setIndexPosition(int i);

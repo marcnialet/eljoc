@@ -31,6 +31,7 @@ private:
     double delayMs;         // delay in ms to add a new piece in the board.
     double delayDecrement;
     vector<Point> stones;
+    vector<Point> glasses;
     // Level goals
     unsigned int points; // Number of point to do.
     
@@ -48,7 +49,7 @@ private:
     
     void setDefaultValues();
     static bool ConfigKeyExists(ValueMap map, string key);
-    static Point getStonePosition(Value stone, Size boardSize);
+    static Point getPiecePosition(Value stone, Size boardSize);
 public:
     static Level* createFromFile(const std::string &filename);
     static Level* createFromLevelNumber(const int levelnumber);
@@ -60,6 +61,7 @@ public:
     
     int getLevelNumber() { return this->levelNumber; }
     vector<Point> getStones() { return this->stones; }
+    vector<Point> getGlasses() { return this->glasses; }
     Statistics* getStats() { return this->statistics; }
     Size getBoardSize() { return this->boardSize; }
     int getNumberOfPieces() { return this->numberOfPieces; }

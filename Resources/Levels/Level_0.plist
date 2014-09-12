@@ -20,5 +20,9 @@
 	<integer>-1</integer>
 	<key>Stones</key>
 	<array/>
+	<key>Glasses</key>
+	<array>
+		<string>2;2</string>
+	</array>
 </dict>
 </plist>

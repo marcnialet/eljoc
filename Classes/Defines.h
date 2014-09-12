@@ -13,13 +13,18 @@
 #define LAYER_TAG_GAMEOVER      2
 #define LAYER_TAG_GAMEHUD       3
 #define LAYER_TAG_GAMEENDLEVEL  4
+#define LAYER_TAG_GAMESETTINGS  5
 
 #define LAYER_Z_GAMEHUD       1
+#define LAYER_Z_GAMESETTINGS  1000
 #define LAYER_Z_GAMEPLAY      100
 #define LAYER_Z_GAMEOVER      200
 #define LAYER_Z_GAMEENDLEVEL  200
 
 #define kFontName "fonts/Marker Felt.ttf"
+
+#define COLOR_WHITE Color4B(255, 255, 255, 255)
+#define COLOR_RED   Color4B(255, 0, 0, 255)
 
 enum GestureType
 {
