@@ -10,7 +10,16 @@
 
 Piece* Piece::create(const int tileType, int row, int column, GameBoard* gameBoard)
 {
-    Piece * piece = Piece::create(getFileNameFromType(tileType, gameBoard->Rows()));
+    string filename = getFileNameFromType(tileType, gameBoard->Rows());
+    Piece * piece;
+    if(tileType==-2)
+    {
+        piece = Piece::createWithTexture(filename);
+    }
+    else{
+        piece = Piece::create(filename);
+    }
+    
     if(piece!= NULL)
     {
         piece->data = new PieceData(row, column, gameBoard);
@@ -23,7 +32,15 @@ Piece* Piece::create(const int tileType, int row, int column, GameBoard* gameBoa
 
 Piece* Piece::create(const int tileType, int indexPosition, GameBoard* gameBoard)
 {
-    Piece * piece = Piece::create(getFileNameFromType(tileType, gameBoard->Rows()));
+    string filename = getFileNameFromType(tileType, gameBoard->Rows());
+    Piece * piece;
+    if(tileType==-2)
+    {
+        piece = Piece::createWithTexture(filename);
+    }
+    else{
+        piece = Piece::create(filename);
+    }
     if(piece!= NULL)
     {
         piece->data = new PieceData(indexPosition, gameBoard);
@@ -51,6 +68,42 @@ Piece* Piece::create(const std::string &filename)
     
 }
 
+Piece* Piece::createWithTexture(const std::string &filename)
+{
+    /*
+    Texture2D *texture = Director::getInstance()->getTextureCache()->addImage(filename);
+    Rect rect = Rect::ZERO;
+    rect.size = texture->getContentSize();
+    
+    Piece *piece = new Piece();
+    if (piece && piece->initWithTexture(texture, rect))
+    */
+    /////////////
+    
+    SpriteFrameCache* cache = SpriteFrameCache::getInstance();
+    cache->addSpriteFramesWithFile("8x8/glasspieceframes.plist", "8x8/glasspieceframes.png");
+    
+   
+    ////////////
+    Piece *piece = new Piece();
+    if (piece && piece->initWithSpriteFrame(cache->getSpriteFrameByName("ice_100.png")) )
+    {
+        //SpriteBatchNode* spriteBatchNode = SpriteBatchNode::create("8x8/glasspieceframes.png");
+        //spriteBatchNode->addChild(piece);
+        
+        piece->filename = filename;
+        piece->autorelease();
+    }
+    else
+    {
+        delete piece;
+        piece = NULL;
+    }
+    return piece;
+    
+}
+
+
 bool Piece::init(const std::string &filename)
 {
     if (!Sprite::initWithFile(filename)) {
@@ -76,6 +129,14 @@ void Piece::setStrong(int s)
 void Piece::decreaseStrong()
 {
     this->data->decreaseStrong();
+    if( this->getStrong() == 2)
+    {
+        this->setSpriteFrame("ice_66.png");
+    }
+    else if( this->getStrong() == 1)
+    {
+        this->setSpriteFrame("ice_33.png");
+    }
 }
 
 bool Piece::onTouchBegan(Touch *touch, Event *event)
@@ -150,7 +211,7 @@ std::string Piece::getFileNameFromType(int tileType, int rows)
     }
     else if(tileType == -2)
     {
-        tilename = "ice_100";
+        tilename = "glasspieceframes";
     }
     else
     {

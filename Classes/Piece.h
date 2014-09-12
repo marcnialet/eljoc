@@ -56,6 +56,7 @@ public:
     // Constructor
     static Piece* create(const int tileType, int indexPosition, GameBoard* gameBoard);
     static Piece* create(const int tileType, int row, int column, GameBoard* gameBoard);
+    static Piece* createWithTexture(const std::string &filename);
     static Piece* create(const std::string &filename);
     virtual bool init(const std::string &filename);
     

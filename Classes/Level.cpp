@@ -88,10 +88,7 @@ Level* Level::createFromFile(const std::string &filename)
                 for(auto glass:glassesConfig)
                 {
                     Point position =getPiecePosition(glass, level->boardSize);
-                    if(position != Point::ZERO)
-                    {
-                        level->glasses.push_back(position);
-                    }
+                    level->glasses.push_back(position);
                 }
             }
 
