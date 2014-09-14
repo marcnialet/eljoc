@@ -13,6 +13,8 @@
 
 #include <iostream>
 #include "cocos2d.h"
+#include "Defines.h"
+
 #include "PieceData.h"
 #include "GameBoard.h"
 
@@ -29,7 +31,7 @@ class Piece: public Sprite
     
     EventListenerTouchOneByOne *listener;
     bool _actived;
-    static std::string getFileNameFromType(int tileType, int rows);
+    static std::string getFileNameFromType(PieceType pieceType, int pieceColor, int rows);
     void setActived(bool active);
     
 public:
@@ -43,10 +45,13 @@ public:
     
     int getRow() { return this->data->getRow(); }
     int getColumn() { return this->data->getColumn(); }
-    int getTileType() { return this->data->getTileType(); }
+    PieceType getPieceType() { return this->data->getPieceType(); }
+    int getPieceColor() { return this->data->getPieceColor(); }
     int getIndexPosition() { return this->data->getIndexPosition(); }
     
-    bool isStone() { return this->data->getTileType() == -1; }
+    bool isStone() { return this->data->getPieceType() == PieceType::Stone; }
+    bool isGlass() { return this->data->getPieceType() == PieceType::Glass; }
+    bool isNormal() { return this->data->getPieceType() == PieceType::Normal; }
     
     int getStrong() { return this->data->getStrong(); }
     void setStrong(int s);
@@ -54,8 +59,8 @@ public:
     
     
     // Constructor
-    static Piece* create(const int tileType, int indexPosition, GameBoard* gameBoard);
-    static Piece* create(const int tileType, int row, int column, GameBoard* gameBoard);
+    static Piece* create(PieceType pieceType, int pieceColor, int indexPosition, GameBoard* gameBoard);
+    static Piece* create(PieceType pieceType, int pieceColor, int row, int column, GameBoard* gameBoard);
     static Piece* createWithTexture(const std::string &filename);
     static Piece* create(const std::string &filename);
     virtual bool init(const std::string &filename);

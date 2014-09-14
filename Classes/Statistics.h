@@ -40,6 +40,10 @@ private:
     
     void updateScore();
     void updateLevel();
+    void updateElapsedTime();
+    void updateChains();
+    void updatePieces();
+    void updateCombos();
 public:
     Statistics();
     Statistics(GameHUDLayer* parentlayer);
@@ -48,6 +52,8 @@ public:
     
     void startTime();
     void stopTime();
+    void resetTime();
+    
     
     double getElapsedTime();
     unsigned int getPoints();
@@ -62,9 +68,6 @@ public:
     void addCombo(int combosize);
     void addPiece(int piecetype);
     void addPieces(vector<int> types);
-    
-    //void setLevelStatistics(Statistics* stad) { this->levelStatistics = stad; }
-    //Statistics* getLevelStadistics() { return this->levelStatistics; }
     
     void setLevel(Level* l);
 };

@@ -8,11 +8,11 @@
 
 #include "Piece.h"
 
-Piece* Piece::create(const int tileType, int row, int column, GameBoard* gameBoard)
+Piece* Piece::create(PieceType pieceType, int pieceColor, int row, int column, GameBoard* gameBoard)
 {
-    string filename = getFileNameFromType(tileType, gameBoard->Rows());
+    string filename = getFileNameFromType(pieceType, pieceColor, gameBoard->Rows());
     Piece * piece;
-    if(tileType==-2)
+    if(pieceType==PieceType::Glass)
     {
         piece = Piece::createWithTexture(filename);
     }
@@ -23,18 +23,19 @@ Piece* Piece::create(const int tileType, int row, int column, GameBoard* gameBoa
     if(piece!= NULL)
     {
         piece->data = new PieceData(row, column, gameBoard);
-        piece->data->setTileType(tileType);
-        piece->data->setStrong(tileType==-2 ? 3:0);
+        piece->data->setPieceType(pieceType);
+        piece->data->setPieceColor(pieceColor);
+        piece->data->setStrong(pieceType==PieceType::Glass ? 3:0);
         piece->setPosition(piece->data->getPosition());
     }
     return piece;
 }
 
-Piece* Piece::create(const int tileType, int indexPosition, GameBoard* gameBoard)
+Piece* Piece::create(PieceType pieceType, int pieceColor, int indexPosition, GameBoard* gameBoard)
 {
-    string filename = getFileNameFromType(tileType, gameBoard->Rows());
+    string filename = getFileNameFromType(pieceType, pieceColor, gameBoard->Rows());
     Piece * piece;
-    if(tileType==-2)
+    if(pieceType==PieceType::Glass)
     {
         piece = Piece::createWithTexture(filename);
     }
@@ -44,8 +45,9 @@ Piece* Piece::create(const int tileType, int indexPosition, GameBoard* gameBoard
     if(piece!= NULL)
     {
         piece->data = new PieceData(indexPosition, gameBoard);
-        piece->data->setTileType(tileType);
-        piece->data->setStrong(tileType==-2 ? 3:0);
+        piece->data->setPieceType(pieceType);
+        piece->data->setPieceColor(pieceColor);
+        piece->data->setStrong(pieceType==PieceType::Glass ? 3:0);
         piece->setPosition(piece->data->getPosition());
     }
     return piece;
@@ -70,27 +72,13 @@ Piece* Piece::create(const std::string &filename)
 
 Piece* Piece::createWithTexture(const std::string &filename)
 {
-    /*
-    Texture2D *texture = Director::getInstance()->getTextureCache()->addImage(filename);
-    Rect rect = Rect::ZERO;
-    rect.size = texture->getContentSize();
-    
-    Piece *piece = new Piece();
-    if (piece && piece->initWithTexture(texture, rect))
-    */
-    /////////////
-    
     SpriteFrameCache* cache = SpriteFrameCache::getInstance();
     cache->addSpriteFramesWithFile("8x8/glasspieceframes.plist", "8x8/glasspieceframes.png");
     
-   
-    ////////////
     Piece *piece = new Piece();
     if (piece && piece->initWithSpriteFrame(cache->getSpriteFrameByName("ice_100.png")) )
     {
-        //SpriteBatchNode* spriteBatchNode = SpriteBatchNode::create("8x8/glasspieceframes.png");
-        //spriteBatchNode->addChild(piece);
-        
+        piece->setOpacity(150);
         piece->filename = filename;
         piece->autorelease();
     }
@@ -102,7 +90,6 @@ Piece* Piece::createWithTexture(const std::string &filename)
     return piece;
     
 }
-
 
 bool Piece::init(const std::string &filename)
 {
@@ -131,10 +118,12 @@ void Piece::decreaseStrong()
     this->data->decreaseStrong();
     if( this->getStrong() == 2)
     {
+        this->setOpacity(100);
         this->setSpriteFrame("ice_66.png");
     }
     else if( this->getStrong() == 1)
     {
+        this->setOpacity(50);
         this->setSpriteFrame("ice_33.png");
     }
 }
@@ -201,21 +190,21 @@ bool Piece::hasNeighbours()
     return false;
     
 }
-std::string Piece::getFileNameFromType(int tileType, int rows)
+std::string Piece::getFileNameFromType(PieceType pieceType, int pieceColor, int rows)
 {
     string tilename;
     string folder;
-    if(tileType == -1)
+    if(pieceType == PieceType::Stone)
     {
         tilename = "stone";
     }
-    else if(tileType == -2)
+    else if(pieceType == PieceType::Glass)
     {
         tilename = "glasspieceframes";
     }
     else
     {
-       tilename = "tile_" + to_string(tileType+1);
+       tilename = "tile_" + to_string(pieceColor+1);
     }
     
     if( rows == 8 )

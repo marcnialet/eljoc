@@ -11,18 +11,14 @@
 	<key>Board_Width</key>
 	<integer>8</integer>
 	<key>Points</key>
-	<integer>3000</integer>
-	<key>NumberOfPieces</key>
+	<integer>1000</integer>
+	<key>numberOfPiecesToAdd</key>
 	<integer>1</integer>
-	<key>NumberOfTypes</key>
+	<key>numberOfColorsToAdd</key>
 	<integer>4</integer>
-	<key>StonePercent</key>
-	<integer>-1</integer>
 	<key>Stones</key>
 	<array/>
 	<key>Glasses</key>
-	<array>
-		<string>0;0</string>
-	</array>
+	<array/>
 </dict>
 </plist>

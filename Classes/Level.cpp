@@ -54,19 +54,14 @@ Level* Level::createFromFile(const std::string &filename)
                 level->delayDecrement = map["DelayDecrement"].asDouble();
             }
             
-            if(ConfigKeyExists(map, "NumberOfPieces"))
+            if(ConfigKeyExists(map, "numberOfPiecesToAdd"))
             {
-                level->numberOfPieces = map["NumberOfPieces"].asInt();
+                level->numberOfPiecesToAdd = map["numberOfPiecesToAdd"].asInt();
             }
             
-            if(ConfigKeyExists(map, "NumberOfTypes"))
+            if(ConfigKeyExists(map, "numberOfColorsToAdd"))
             {
-                level->numberOfTypes = map["NumberOfTypes"].asInt();
-            }
-            
-            if(ConfigKeyExists(map, "StonePercent"))
-            {
-                level->stonePercent = map["StonePercent"].asInt();
+                level->numberOfColorsToAdd = map["numberOfColorsToAdd"].asInt();
             }
             
             if(ConfigKeyExists(map, "Stones"))
@@ -172,11 +167,8 @@ void Level::setDefaultValues()
     this->points = 1000;
     this->delayMs = 1000;
     this->delayDecrement = 0;
-    this->numberOfPieces = 1;
-    this->numberOfTypes = 4;
-    this->stonePercent = -1;
-    this->icePercent = -1;
-    this->firePercent = -1;
+    this->numberOfPiecesToAdd = 1;
+    this->numberOfColorsToAdd = 4;
 }
 
 bool Level::ConfigKeyExists(ValueMap map, string key)

@@ -24,28 +24,26 @@ class Level
 private:
     Statistics* statistics;
     
-    int levelNumber;
-    Size boardSize;         // size of the board
-    int numberOfPieces;     // number of pieces to add to the board each delay
-    int numberOfTypes;      // number of piece's types.
-    double delayMs;         // delay in ms to add a new piece in the board.
-    double delayDecrement;
-    vector<Point> stones;
-    vector<Point> glasses;
+    int levelNumber;            // level number
+    Size boardSize;             // size of the board (8x8 10x10 etc.)
+    int numberOfPiecesToAdd;    // number of pieces to add to the board each delay
+    int numberOfColorsToAdd;    // number of piece's types.
+    double delayMs;             // delay in ms to add a new piece in the board.
+    double delayDecrement;      // delay decrement slope -> delay becomes shortes pieces are added faster -> increase difficulty
+    vector<Point> stones;       // List of the stones' positions in the board
+    vector<Point> glasses;      // List of the glasses' positions in the board
+    
     // Level goals
-    unsigned int points; // Number of point to do.
     
-    int stonePercent;
-    int icePercent;
-    int firePercent;
+    unsigned int points;            // Number of point to do.
+    double elapsedTimeMs;           // Ms seconds to play
+    unsigned int numberOfPieces;    // Number of pieces to add in the board.
+    unsigned int numberOfCombos;    // Number of combos of any type to do.
+    unsigned int numberOfChains;    // Number of chains of any type to do.
+    vector<unsigned int> piecesCounter; // Number of piece to add by color
+    vector<unsigned int> combosCounter; // Number of combos by length
+    vector<unsigned int> chainsCounter; // Number of chains by length
     
-   /* double elapsedTimeMs;
-    unsigned int numberOfPieces;
-    unsigned int numberOfCombos;
-    unsigned int numberOfChains;
-    vector<unsigned int> piecesCounter;
-    vector<unsigned int> combosCounter;
-    vector<unsigned int> chainsCounter;*/
     
     void setDefaultValues();
     static bool ConfigKeyExists(ValueMap map, string key);
@@ -64,11 +62,9 @@ public:
     vector<Point> getGlasses() { return this->glasses; }
     Statistics* getStats() { return this->statistics; }
     Size getBoardSize() { return this->boardSize; }
-    int getNumberOfPieces() { return this->numberOfPieces; }
-    int getNumberOfTypes() { return this->numberOfTypes; }
+    int getNumberOfPiecesToAdd() { return this->numberOfPiecesToAdd; }
+    int getNumberOfColorsToAdd() { return this->numberOfColorsToAdd; }
     double getPieceDelay();
-    int getStonePercent() { return this->stonePercent; }
-    int getIcePercent() { return this->icePercent; }
-    int getFirePercent() { return this->firePercent; }
+    
 };
 #endif /* defined(__eljoc__Level__) */

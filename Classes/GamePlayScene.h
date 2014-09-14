@@ -85,9 +85,6 @@ private:
     void stopGame();
     void removePieceCallback(Piece* piece);
     void setGameMode(GameMode gamemode);
-    bool getRandomStone();
-    bool getRandomIce();
-    bool getRandomFire();
     
     void onTouchesBegan(const vector<Touch*>& touches, Event* event);
     void onTouchesMoved(const vector<Touch*>& touches, Event* event);

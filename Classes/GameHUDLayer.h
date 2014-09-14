@@ -18,8 +18,12 @@ private:
     GamePlay* layerGamePlay;
     
     Label* gameScoreLabel;
-    Label* levelScoreLabel;
     Label* levelLabel;
+    Label* levelScoreLabel;
+    Label* levelElapsedTimeLabel;
+    Label* levelPiecesLabel;
+    Label* levelCombosLabel;
+    Label* levelChainsLabel;
     
     cocos2d::Label* addLabel(const std::string fontname, const float fontSize, const char *text, const cocos2d::Vec2 anchor, const cocos2d::Vec2 position);
     void touchEvent(Ref *pSender, ui::Widget::TouchEventType type);
@@ -31,7 +35,10 @@ public:
     void setGameScore(int score);
     void setLevelScore(int score);
     void setLevel(int level);
-    
+    void setLevelElapsedTime(int elapsedtimeMs);
+    void setLevelPieces(int pieces);
+    void setLevelCombos(int combos);
+    void setLevelChains(int chains);
     
     CREATE_FUNC(GameHUDLayer);
 };

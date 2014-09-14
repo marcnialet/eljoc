@@ -17,7 +17,13 @@ bool GameHUDLayer::init()
     
     this->levelLabel = this->addLabel(kFontName, 48, "Level 0", Vec2(0.0, 1.0), Vec2(100, visibleSize.height - 10));
     this->gameScoreLabel = this->addLabel(kFontName, 48, "Score 0", Vec2(0.0, 1.0), Vec2(100, visibleSize.height - 60));
-    this->levelScoreLabel = this->addLabel(kFontName, 32, "Score 0", Vec2(0.0, 1.0), Vec2(20, 160));
+    
+    this->levelScoreLabel = this->addLabel(kFontName, 24, "Score 0", Vec2(0.0, 1.0), Vec2(20, 160));
+    this->levelElapsedTimeLabel = this->addLabel(kFontName, 24, "Time 0", Vec2(0.0, 1.0), Vec2(220, 160));
+    
+    this->levelPiecesLabel = this->addLabel(kFontName, 24, "Pieces 0", Vec2(0.0, 1.0), Vec2(20, 100));
+    this->levelCombosLabel = this->addLabel(kFontName, 24, "Combos 0", Vec2(0.0, 1.0), Vec2(160, 100));
+    this->levelChainsLabel = this->addLabel(kFontName, 24, "Chains 0", Vec2(0.0, 1.0), Vec2(300, 100));
     
     auto settingsButton = ui::Button::create("Settings.png");
     settingsButton->setPosition(Vec2(42, visibleSize.height - 42));
@@ -67,25 +73,56 @@ GamePlay* GameHUDLayer::getGamePlayLayer()
     return this->layerGamePlay;
 }
 
-void GameHUDLayer::setLevelScore(int score)
-{
-    char scoreString[64];
-    sprintf(scoreString, "Score %d", score);
-    this->levelScoreLabel->setString(scoreString);
-}
-
 void GameHUDLayer::setGameScore(int score)
 {
-    char scoreString[64];
-    sprintf(scoreString, "Score %d", score);
-    this->gameScoreLabel->setString(scoreString);
+    char label[64];
+    sprintf(label, "Score %d", score);
+    this->gameScoreLabel->setString(label);
 }
 
 void GameHUDLayer::setLevel(int level)
 {
-    char levelString[64];
-    sprintf(levelString, "Level %d", level);
-    this->levelLabel->setString(levelString);
+    char label[64];
+    sprintf(label, "Level %d", level);
+    this->levelLabel->setString(label);
+}
+
+void GameHUDLayer::setLevelScore(int score)
+{
+    char label[64];
+    sprintf(label, "Score %d", score);
+    this->levelScoreLabel->setString(label);
+}
+
+void GameHUDLayer::setLevelElapsedTime(int elapsedtimeMs)
+{
+    long milliseconds   = (long) (elapsedtimeMs / 1000) % 1000;
+    long seconds    = (((long) (elapsedtimeMs / 1000) - milliseconds)/1000)%60 ;
+    long minutes    = (((((long) (elapsedtimeMs / 1000) - milliseconds)/1000) - seconds)/60) %60;
+    long hours      = ((((((long) (elapsedtimeMs / 1000) - milliseconds)/1000) - seconds)/60) - minutes)/60;
+    
+    char label[64];
+    sprintf(label, "Time %02ld:%02ld:%02ld.%03ld", hours, minutes, seconds, milliseconds);
+    this->levelElapsedTimeLabel->setString(label);
+}
+void GameHUDLayer::setLevelPieces(int pieces)
+{
+    char label[64];
+    sprintf(label, "Pieces %d", pieces);
+    this->levelPiecesLabel->setString(label);
+}
+void GameHUDLayer::setLevelCombos(int combos)
+{
+    char label[64];
+    sprintf(label, "Combos %d", combos);
+    this->levelCombosLabel->setString(label);
+}
+void GameHUDLayer::setLevelChains(int chains)
+{
+    char label[64];
+    sprintf(label, "Chains %d", chains);
+    this->levelChainsLabel->setString(label);
+    
 }
 
 Label* GameHUDLayer::addLabel(const std::string fontname, const float fontSize, const char *text, const cocos2d::Vec2 anchor, const cocos2d::Vec2 position)

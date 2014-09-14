@@ -64,6 +64,15 @@ void Statistics::startTime()
         this->level->getStats()->startTime();
     }
 }
+void Statistics::resetTime()
+{
+    this->endtime = Utils::getTimeTick();
+    
+    if(this->level!=NULL && this->level->getStats()!=NULL)
+    {
+        this->level->getStats()->updateTime();
+    }
+}
 
 void Statistics::stopTime()
 {
@@ -90,6 +99,7 @@ void Statistics::addChain(int chainsize)
         
         this->points += chainsize * 5;
         this->updateScore();
+        this->updateChains();
     }
 }
 
@@ -108,6 +118,7 @@ void Statistics::addCombo(int combosize)
         
         this->points += combosize * 100;
         this->updateScore();
+        this->updateCombos();
     }
 }
 
@@ -126,6 +137,7 @@ void Statistics::addPiece(int piecetype)
         
         this->points += 10;
         this->updateScore();
+        this->updatePieces();
     }
 }
 
@@ -193,6 +205,54 @@ unsigned int Statistics::getNumberOfChainsOfType(int chainsize)
         return this->chainsCounter[chainsize];
     }
     return 0;
+}
+
+void Statistics::updateElapsedTime()
+{
+    if(this->layer!=NULL && this->level!=NULL)
+    {
+        Statistics* levelstats = this->level->getStats();
+        if(levelstats!=NULL)
+        {
+            this->layer->setLevelElapsedTime(levelstats->getElapsedTime());
+        }
+    }
+}
+
+void Statistics::updatePieces()
+{
+    if(this->layer!=NULL && this->level!=NULL)
+    {
+        Statistics* levelstats = this->level->getStats();
+        if(levelstats!=NULL)
+        {
+            this->layer->setLevelPieces(levelstats->getNumberOfPieces());
+        }
+    }
+}
+
+void Statistics::updateCombos()
+{
+    if(this->layer!=NULL && this->level!=NULL)
+    {
+        Statistics* levelstats = this->level->getStats();
+        if(levelstats!=NULL)
+        {
+            this->layer->setLevelCombos(levelstats->getNumberOfCombos());
+        }
+    }
+}
+
+void Statistics::updateChains()
+{
+    if(this->layer!=NULL && this->level!=NULL)
+    {
+        Statistics* levelstats = this->level->getStats();
+        if(levelstats!=NULL)
+        {
+            this->layer->setLevelChains(levelstats->getNumberOfChains());
+        }
+    }
 }
 
 void Statistics::updateLevel()

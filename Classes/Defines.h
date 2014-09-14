@@ -26,6 +26,13 @@
 #define COLOR_WHITE Color4B(255, 255, 255, 255)
 #define COLOR_RED   Color4B(255, 0, 0, 255)
 
+enum PieceType
+{
+    Normal = 0,
+    Stone = 1,
+    Glass = 2
+};
+
 enum GestureType
 {
     None = 0,

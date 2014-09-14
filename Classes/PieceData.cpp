@@ -26,7 +26,7 @@ PieceData::PieceData(int row, int column, GameBoard* gameBoard)
 
 void PieceData::Init()
 {
-    this->tileType = 0;
+    this->pieceType = PieceType::Normal;
     this->indexPosition = 0;
     this->row = 0;
     this->column = 0;

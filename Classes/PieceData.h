@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include "cocos2d.h"
+#include "Defines.h"
 #include "GameBoard.h"
 
 USING_NS_CC;
@@ -18,7 +19,8 @@ USING_NS_CC;
 class PieceData
 {
 private:
-    int tileType;
+    PieceType pieceType;
+    int pieceColor;
     int indexPosition;
     int row;
     int column;
@@ -36,12 +38,17 @@ public:
     
     int getRow() { return this->row; }
     int getColumn() { return this->column; }
-    int getTileType() { return this->tileType; }
+    PieceType getPieceType() { return this->pieceType; }
     int getIndexPosition() { return this->indexPosition; }
     Point getPosition() { return this->position; }
-    void setTileType(int t) { this->tileType = t; }    
+    void setPieceType(PieceType t) { this->pieceType = t; }
     int getStrong() { return this->strong; }
-    void setStrong(int s) { this->strong = s; }
+    void setStrong(int s) { this->strong = s; }   
+    
+    int getPieceColor() { return this->pieceColor; }
+    void setPieceColor(int c) { this->pieceColor = c; }
+    
+    
     void decreaseStrong() {
         if(this->strong>0)
         {

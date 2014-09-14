@@ -179,6 +179,7 @@ void GamePlay::onTouchesBegan(const vector<Touch*>& touches, Event* event)
     
     this->isTouchClicked = false;
     this->isTouchDown = true;
+    // log("BEGAN MULTIPLE: %s", isTouchMultiple?"YES":"NO");
     for (auto &touch: touches)
     {
         this->initialTouchPos.push_back(touch->getLocation());
@@ -189,7 +190,8 @@ void GamePlay::onTouchesBegan(const vector<Touch*>& touches, Event* event)
 void GamePlay::onTouchesMoved(const vector<Touch*>& touches, Event* event)
 {
     // log("onTouchesMoved");
-    this->currentTouchPos.clear();    
+    this->currentTouchPos.clear();
+    // log("MOVED MULTIPLE: %s", touches.size()>1?"YES":"NO");
     for (auto &touch: touches)
     {
         this->currentTouchPos.push_back(touch->getLocation());
@@ -198,18 +200,18 @@ void GamePlay::onTouchesMoved(const vector<Touch*>& touches, Event* event)
 
 void GamePlay::onTouchesEnded(const vector<Touch*>& touches, Event* event)
 {
-    // log("onTouchesEnded");
+    //log("onTouchesEnded");
     if(this->isTouchDown)
     {
         this->isTouchClicked = true;
     }
-    this->isTouchDown = false;
     this->initialTouchPos.clear();
+    this->currentTouchPos.clear();
 }
 
 void GamePlay::onTouchesCancelled(const vector<Touch*>& touches, Event* event)
 {
-    // log("onTouchesCancelled");
+    //log("onTouchesCancelled");
 }
 
 GestureType GamePlay::getGestureType(vector<int>& rowcols)
@@ -220,6 +222,7 @@ GestureType GamePlay::getGestureType(vector<int>& rowcols)
     bool multiple = currentTouchPos.size()>1 && currentTouchPos.size()>1;
     if(single||multiple)
     {
+        // log("Gesture Type: SINGLE: %s/tMULTIPLE: %s", single?"YES":"NO", multiple?"YES":"NO");
         if (initialTouchPos[0].x - currentTouchPos[0].x > this->swipeThreshold)
         {
             int initY = initialTouchPos[0].y;
@@ -260,7 +263,6 @@ GestureType GamePlay::getGestureType(vector<int>& rowcols)
                 }
             }
         }
-        
         else if (initialTouchPos[0].y - currentTouchPos[0].y > this->swipeThreshold)
         {
             int initX = initialTouchPos[0].x;
@@ -301,14 +303,13 @@ GestureType GamePlay::getGestureType(vector<int>& rowcols)
                 }
             }
         }
-        else if(this->isTouchClicked)
-        {
-            this->isTouchClicked = false;
-            gesture = GestureType::Single_Click;
-            // log("Single Click");
-        }
     }
-    
+    else if(this->isTouchClicked)
+    {
+        this->isTouchClicked = false;
+        gesture = GestureType::Single_Click;
+        // log("Single Click");
+    }
     
     return gesture;
 }
@@ -355,7 +356,7 @@ void GamePlay::startCurrentLevel()
     for (int i=0; i<this->level->getStones().size(); ++i)
     {
         Point pos = this->level->getStones()[i];
-        Piece * piece = Piece::create(-1, pos.x, pos.y, this->gameBoard);
+        Piece * piece = Piece::create(PieceType::Stone, -1, pos.x, pos.y, this->gameBoard);
         this->vectorOfPieces.push_back(piece);
         this->addChild(piece);
         for (int k=0; k<this->vectorOfPositions.size(); ++k)
@@ -372,7 +373,7 @@ void GamePlay::startCurrentLevel()
     for (int i=0; i<this->level->getGlasses().size(); ++i)
     {
         Point pos = this->level->getGlasses()[i];
-        Piece * piece = Piece::create(-2, pos.x, pos.y, this->gameBoard);
+        Piece * piece = Piece::create(PieceType::Glass, -1, pos.x, pos.y, this->gameBoard);
         this->vectorOfGlasses.push_back(piece);
         this->addChild(piece, 1000);
     }
@@ -415,7 +416,7 @@ bool GamePlay::mustAddPieces()
 
 void GamePlay::addPiecesToBoard()
 {
-    for(int i=0; i<this->level->getNumberOfPieces(); i++)
+    for(int i=0; i<this->level->getNumberOfPiecesToAdd(); i++)
     {
         if(this->vectorOfPositions.size()>0)
         {
@@ -428,14 +429,14 @@ void GamePlay::addPieceToBoard()
 {
     Piece* piece;
     int index;
-    int pieceType;
+    int pieceColor;
     vector<Piece *> neighbours;
     for(int i=0; i<3;i++)
     {// we try to get a new piece without neighbours (maximum 3 tries).
         index = this->getRandomIndexPosition();
-        pieceType = this->getRandomTileType();
+        pieceColor = this->getRandomTileType();
         
-        Piece * nextpiece = Piece::create(pieceType, index, this->gameBoard);
+        Piece * nextpiece = Piece::create(PieceType::Normal, pieceColor, index, this->gameBoard);
         
         if(nextpiece->isStone())
         {
@@ -460,14 +461,14 @@ void GamePlay::addPieceToBoard()
     
     if(!piece->isStone())
     {
-        this->statistics->addPiece(pieceType);
+        this->statistics->addPiece(pieceColor);
         this->setPieceNeighbours(piece, neighbours);
     }
 }
 
 void GamePlay::processGesture()
 {
-    if (true == isTouchDown)
+    if (true == this->isTouchDown)
     {
         vector<int> rowcols;
         GestureType gesture = this->getGestureType(rowcols);
@@ -596,6 +597,10 @@ void GamePlay::processGesture()
             this->currentTouchPos.clear();
             isTouchDown = false;
         }
+        else if (gesture == GestureType::Single_Click)
+        {
+            this->isTouchDown = false;
+        }
     }
 }
 
@@ -696,25 +701,25 @@ vector<Piece *> GamePlay::getPieceNeighbours(Piece* piece, vector<Piece *> piece
         int col = piece->getColumn();
         
         Piece* p1 = this->getPieceByRowColumn(pieces, row-1,col);
-        if(p1!=NULL && !p1->isStone() && p1->getTileType()==piece->getTileType())
+        if(p1!=NULL && p1->isNormal() && p1->getPieceColor()==piece->getPieceColor())
         {
             neighbours.push_back(p1);
         }
         
         Piece* p2 = this->getPieceByRowColumn(pieces, row+1,col);
-        if(p2!=NULL && !p2->isStone() && p2->getTileType()==piece->getTileType())
+        if(p2!=NULL && p2->isNormal() && p2->getPieceColor()==piece->getPieceColor())
         {
             neighbours.push_back(p2);
         }
         
         Piece* p3 = this->getPieceByRowColumn(pieces, row,col-1);
-        if(p3!=NULL && !p3->isStone() && p3->getTileType()==piece->getTileType())
+        if(p3!=NULL && p3->isNormal() && p3->getPieceColor()==piece->getPieceColor())
         {
             neighbours.push_back(p3);
         }
         
         Piece* p4 = this->getPieceByRowColumn(pieces, row,col+1);
-        if(p4!=NULL && !p4->isStone() && p4->getTileType()==piece->getTileType())
+        if(p4!=NULL && p4->isNormal() && p4->getPieceColor()==piece->getPieceColor())
         {
             neighbours.push_back(p4);
         }
@@ -756,9 +761,9 @@ void GamePlay::findChains()
         // log("Chain in found: %d", (int)chains.size());
         if(chains.size()>0)
         {
+            int combosize = 0;
             for (auto &chain: chains)
             {
-                int combosize = 0;
                 if(chain.size()>=3)
                 {
                     this->statistics->addChain(chain.size());
@@ -797,10 +802,10 @@ void GamePlay::findChains()
                         }
                     }
                 }
-                if(combosize>1)
-                {
-                    this->statistics->addCombo(combosize);
-                }
+            }
+            if(combosize>1)
+            {
+                this->statistics->addCombo(combosize);
             }
         }
     }
@@ -843,53 +848,10 @@ void GamePlay::findChildChain(vector<Piece *>& list, Piece* piece, vector<Piece 
     }
 }
 
-bool GamePlay::getRandomStone()
-{
-    if(this->level->getStonePercent()>0)
-    {
-        int randvalue = rand() % 1000;
-        if(randvalue < this->level->getStonePercent())
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool GamePlay::getRandomIce()
-{
-    if(this->level->getIcePercent()>0)
-    {
-        int randvalue = rand() % 1000;
-        if(randvalue < this->level->getIcePercent())
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool GamePlay::getRandomFire()
-{
-    if(this->level->getFirePercent()>0)
-    {
-        int randvalue = rand() % 1000;
-        if(randvalue < this->level->getFirePercent())
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
 int GamePlay::getRandomTileType()
 {
-    int tileType = rand() % this->level->getNumberOfTypes();
+    int tileType = rand() % this->level->getNumberOfColorsToAdd();
     // log("Next tile type: %d",tileType);
-    if(this->getRandomStone())
-    {
-        tileType = -1;
-    }
     return tileType;
 }
 
