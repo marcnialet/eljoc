@@ -53,8 +53,6 @@ public:
     static Level* createFromLevelNumber(const int levelnumber);
     
     Level();
-    void start();
-    void stop();
     bool IsLevelDone();
     
     int getLevelNumber() { return this->levelNumber; }

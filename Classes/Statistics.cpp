@@ -44,8 +44,8 @@ void Statistics::init()
         this->combosCounter.push_back(0);
         this->chainsCounter.push_back(0);
     }
-    this->starttime = 0;
-    this->endtime = 0;
+    this->inittime = 0;
+    this->elapsedtime = 0;
 }
 
 void Statistics::setLevel(Level* l)
@@ -54,34 +54,50 @@ void Statistics::setLevel(Level* l)
     this->updateLevel();
 }
 
-void Statistics::startTime()
+void Statistics::startTimer()
 {
-    this->starttime = Utils::getTimeTick();
-    this->endtime = Utils::getTimeTick();
-    
+    this->inittime = Utils::getTimeTick();
     if(this->level!=NULL && this->level->getStats()!=NULL)
     {
-        this->level->getStats()->startTime();
+        this->level->getStats()->startTimer();
     }
 }
-void Statistics::resetTime()
+void Statistics::pauseTimer()
 {
-    this->endtime = Utils::getTimeTick();
-    
+    if(this->inittime!=0)
+    {
+        this->elapsedtime += ( Utils::getTimeTick() - this->inittime );
+        this->inittime = 0;
+        if(this->level!=NULL && this->level->getStats()!=NULL)
+        {
+            this->level->getStats()->pauseTimer();
+        }
+    }
+}
+void Statistics::resetTimer()
+{
+    this->inittime = 0;
+    this->elapsedtime = 0;
+}
+
+void Statistics::updateTimer()
+{
+    if(this->inittime!=0)
+    {
+        double currenttime = Utils::getTimeTick();
+        this->elapsedtime += ( currenttime - this->inittime );
+        this->inittime = currenttime;
+        this->updateElapsedTime();
+    }
     if(this->level!=NULL && this->level->getStats()!=NULL)
     {
-        this->level->getStats()->updateTime();
+        this->level->getStats()->updateTimer();
     }
 }
 
-void Statistics::stopTime()
+double Statistics::getElapsedTime()
 {
-    this->endtime = Utils::getTimeTick();
-    
-    if(this->level!=NULL && this->level->getStats()!=NULL)
-    {
-        this->level->getStats()->stopTime();
-    }
+    return this->elapsedtime;
 }
 
 void Statistics::addChain(int chainsize)
@@ -154,12 +170,6 @@ void Statistics::addPieces(vector<int> piecetypes)
     }
 }
 
-double Statistics::getElapsedTime()
-{
-    double elapsedtime = this->endtime - this->starttime;
-    return elapsedtime;
-}
-
 unsigned int Statistics::getPoints()
 {
     return this->points;
@@ -207,18 +217,6 @@ unsigned int Statistics::getNumberOfChainsOfType(int chainsize)
     return 0;
 }
 
-void Statistics::updateElapsedTime()
-{
-    if(this->layer!=NULL && this->level!=NULL)
-    {
-        Statistics* levelstats = this->level->getStats();
-        if(levelstats!=NULL)
-        {
-            this->layer->setLevelElapsedTime(levelstats->getElapsedTime());
-        }
-    }
-}
-
 void Statistics::updatePieces()
 {
     if(this->layer!=NULL && this->level!=NULL)
@@ -262,6 +260,19 @@ void Statistics::updateLevel()
         this->layer->setLevel(this->level->getLevelNumber());
     }
 }
+
+void Statistics::updateElapsedTime()
+{
+    if(this->layer!=NULL && this->level!=NULL)
+    {
+        Statistics* levelstats = this->level->getStats();
+        if(levelstats!=NULL)
+        {
+            this->layer->setLevelElapsedTime(levelstats->getElapsedTime());
+        }
+    }
+}
+
 void Statistics::updateScore()
 {
     if(this->layer!=NULL && this->level!=NULL)

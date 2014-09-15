@@ -35,7 +35,7 @@ private:
     vector<unsigned int> combosCounter;
     vector<unsigned int> chainsCounter;
     
-    double starttime, endtime;
+    double inittime, elapsedtime;
     Level* level;
     
     void updateScore();
@@ -50,10 +50,11 @@ public:
     
     void init();
     
-    void startTime();
-    void stopTime();
-    void resetTime();
-    
+    void startTimer();
+    void pauseTimer();
+    void resetTimer();    
+    void updateTimer();
+
     
     double getElapsedTime();
     unsigned int getPoints();

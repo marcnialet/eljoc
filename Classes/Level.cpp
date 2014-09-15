@@ -131,21 +131,6 @@ Point Level::getPiecePosition(Value piece, Size boardSize)
     }
     return position;
 }
-void Level::start()
-{
-    if(this->statistics!=NULL)
-    {
-        this->statistics->startTime();
-    }
-}
-
-void Level::stop()
-{
-    if(this->statistics!=NULL)
-    {
-        this->statistics->stopTime();
-    }
-}
 
 double Level::getPieceDelay()
 {

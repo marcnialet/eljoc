@@ -35,7 +35,7 @@ public:
     void setGameScore(int score);
     void setLevelScore(int score);
     void setLevel(int level);
-    void setLevelElapsedTime(int elapsedtimeMs);
+    void setLevelElapsedTime(double elapsedtimeMs);
     void setLevelPieces(int pieces);
     void setLevelCombos(int combos);
     void setLevelChains(int chains);

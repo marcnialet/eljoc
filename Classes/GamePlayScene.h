@@ -83,6 +83,7 @@ private:
     bool isGameOver();
     void startGame();
     void stopGame();
+    void updateTimer();
     void removePieceCallback(Piece* piece);
     void setGameMode(GameMode gamemode);
     

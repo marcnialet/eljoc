@@ -103,6 +103,7 @@ void GamePlay::update(float dt)
         case GameMode::Paused:
             break;
     }
+    
 }
 
 void GamePlay::setGameMode(GameMode gamemode)
@@ -146,6 +147,7 @@ void GamePlay::runGameLoop()
         {
             this->setGameMode(GameMode::LevelDone);
         }
+        this->updateTimer();
     }
 }
 
@@ -604,19 +606,27 @@ void GamePlay::processGesture()
     }
 }
 
+void GamePlay::updateTimer()
+{
+    if(this->statistics!=NULL)
+    {
+        this->statistics->updateTimer();
+    }
+}
+
 void GamePlay::startGame()
 {
-    if(this->level!=NULL)
+    if(this->statistics!=NULL)
     {
-        this->level->start();
+        this->statistics->startTimer();
     }
 }
 
 void GamePlay::stopGame()
 {
-    if(this->level!=NULL)
+    if(this->statistics!=NULL)
     {
-        this->level->stop();
+        this->statistics->pauseTimer();
     }
 }
 

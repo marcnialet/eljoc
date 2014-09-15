@@ -94,7 +94,7 @@ void GameHUDLayer::setLevelScore(int score)
     this->levelScoreLabel->setString(label);
 }
 
-void GameHUDLayer::setLevelElapsedTime(int elapsedtimeMs)
+void GameHUDLayer::setLevelElapsedTime(double elapsedtimeMs)
 {
     long milliseconds   = (long) (elapsedtimeMs / 1000) % 1000;
     long seconds    = (((long) (elapsedtimeMs / 1000) - milliseconds)/1000)%60 ;
