@@ -21,5 +21,6 @@ class Utils
 public:
     static double getTimeTick();
     static int myrandom (int i);
+    static string formatMilliseconds(double  timeinMs);
 };
 #endif /* defined(__eljoc__Utils__) */

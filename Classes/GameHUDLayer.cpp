@@ -1,6 +1,8 @@
 #include "GameHUDLayer.h"
 #include "GamePlayScene.h"
 #include "Defines.h"
+#include "Utils.h"
+
 #include <UIButton.h>
 
 USING_NS_CC;
@@ -15,15 +17,21 @@ bool GameHUDLayer::init()
     
     auto visibleSize = Director::getInstance()->getVisibleSize();
     
-    this->levelLabel = this->addLabel(kFontName, 48, "Level 0", Vec2(0.0, 1.0), Vec2(100, visibleSize.height - 10));
+    this->gameElapsedTimeLabel = this->addLabel(kFontName, 18, "Time 0", Vec2(0.0, 1.0), Vec2(visibleSize.width-150, visibleSize.height - 10));
     this->gameScoreLabel = this->addLabel(kFontName, 48, "Score 0", Vec2(0.0, 1.0), Vec2(100, visibleSize.height - 60));
+    this->levelLabel = this->addLabel(kFontName, 48, "Level 0", Vec2(0.0, 1.0), Vec2(100, visibleSize.height - 10));
     
-    this->levelScoreLabel = this->addLabel(kFontName, 24, "Score 0", Vec2(0.0, 1.0), Vec2(20, 160));
-    this->levelElapsedTimeLabel = this->addLabel(kFontName, 24, "Time 0", Vec2(0.0, 1.0), Vec2(220, 160));
+    this->levelScoreLabel = this->addLabel(kFontName, 24, "Score 0", Vec2(0.0, 1.0), Vec2(20, 180));
+    this->levelElapsedTimeLabel = this->addLabel(kFontName, 24, "Time 0", Vec2(0.0, 1.0), Vec2(220, 180));
     
-    this->levelPiecesLabel = this->addLabel(kFontName, 24, "Pieces 0", Vec2(0.0, 1.0), Vec2(20, 100));
-    this->levelCombosLabel = this->addLabel(kFontName, 24, "Combos 0", Vec2(0.0, 1.0), Vec2(160, 100));
-    this->levelChainsLabel = this->addLabel(kFontName, 24, "Chains 0", Vec2(0.0, 1.0), Vec2(300, 100));
+    this->levelPiecesLabel = this->addLabel(kFontName, 24, "Pieces 0", Vec2(0.0, 1.0), Vec2(20, 95));
+    this->levelCombosLabel = this->addLabel(kFontName, 24, "Combos 0", Vec2(0.0, 1.0), Vec2(160, 95));
+    this->levelChainsLabel = this->addLabel(kFontName, 24, "Chains 0", Vec2(0.0, 1.0), Vec2(300, 95));
+    
+    
+    this->levelPiecesByTypeLabel = this->addLabel(kFontName, 18, "Pieces 0", Vec2(0.0, 1.0), Vec2(40, 120));
+    this->levelCombosByTypeLabel = this->addLabel(kFontName, 18, "Combos 0", Vec2(0.0, 1.0), Vec2(40, 140));
+    this->levelChainsByTypeLabel = this->addLabel(kFontName, 18, "Chains 0", Vec2(0.0, 1.0), Vec2(40, 160));
     
     auto settingsButton = ui::Button::create("Settings.png");
     settingsButton->setPosition(Vec2(42, visibleSize.height - 42));
@@ -94,34 +102,84 @@ void GameHUDLayer::setLevelScore(int score)
     this->levelScoreLabel->setString(label);
 }
 
+void GameHUDLayer::setGameElapsedTime(double elapsedtimeMs)
+{
+    this->gameElapsedTimeLabel->setString("Time: "+  Utils::formatMilliseconds(elapsedtimeMs));
+}
+
 void GameHUDLayer::setLevelElapsedTime(double elapsedtimeMs)
 {
-    long milliseconds   = (long) (elapsedtimeMs / 1000) % 1000;
-    long seconds    = (((long) (elapsedtimeMs / 1000) - milliseconds)/1000)%60 ;
-    long minutes    = (((((long) (elapsedtimeMs / 1000) - milliseconds)/1000) - seconds)/60) %60;
-    long hours      = ((((((long) (elapsedtimeMs / 1000) - milliseconds)/1000) - seconds)/60) - minutes)/60;
-    
-    char label[64];
-    sprintf(label, "Time %02ld:%02ld:%02ld.%03ld", hours, minutes, seconds, milliseconds);
-    this->levelElapsedTimeLabel->setString(label);
+    this->levelElapsedTimeLabel->setString("Time: "+  Utils::formatMilliseconds(elapsedtimeMs));
 }
+
 void GameHUDLayer::setLevelPieces(int pieces)
 {
     char label[64];
     sprintf(label, "Pieces %d", pieces);
     this->levelPiecesLabel->setString(label);
 }
+
 void GameHUDLayer::setLevelCombos(int combos)
 {
     char label[64];
     sprintf(label, "Combos %d", combos);
     this->levelCombosLabel->setString(label);
 }
+
 void GameHUDLayer::setLevelChains(int chains)
 {
     char label[64];
     sprintf(label, "Chains %d", chains);
     this->levelChainsLabel->setString(label);
+    
+}
+
+void GameHUDLayer::setLevelPiecesByType(vector<unsigned int> piecesCounter)
+{
+    string buffer = "Pieces: ";
+    for(int i=0; i<piecesCounter.size(); i++)
+    {
+        int count = piecesCounter[i];
+        if(count==0) continue;
+        
+        char textcount[64];
+        sprintf(textcount, "(%d): %d - ", i, count);
+        buffer.append(textcount);
+    }
+        
+    this->levelPiecesByTypeLabel->setString(buffer);
+}
+
+void GameHUDLayer::setLevelCombosByType(vector<unsigned int> combosCounter)
+{
+    string buffer = "Combos: ";
+    for(int i=0; i<combosCounter.size(); i++)
+    {
+        int count = combosCounter[i];
+        if(count==0) continue;
+        
+        char textcount[64];
+        sprintf(textcount, "(%d): %d - ", i, count);
+        buffer.append(textcount);
+    }
+    
+    this->levelCombosByTypeLabel->setString(buffer);
+}
+
+void GameHUDLayer::setLevelChainsByType(vector<unsigned int> chainsCounter)
+{
+    string buffer = "Chains: ";
+    for(int i=0; i<chainsCounter.size(); i++)
+    {
+        int count = chainsCounter[i];
+        if(count==0) continue;
+        
+        char textcount[64];
+        sprintf(textcount, "(%d): %d - ", i, count);
+        buffer.append(textcount);
+    }
+    
+    this->levelChainsByTypeLabel->setString(buffer);
     
 }
 

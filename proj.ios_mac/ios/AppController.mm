@@ -77,9 +77,11 @@ static AppDelegate s_sharedApplication;
     // IMPORTANT: Setting the GLView should be done after creating the RootViewController
     cocos2d::GLView *glview = cocos2d::GLView::createWithEAGLView(eaglView);
     cocos2d::Director::getInstance()->setOpenGLView(glview);
-
+    cocos2d::Director::getInstance()->setDisplayStats(false);
     cocos2d::Application::getInstance()->run();
 
+    
+    cocos2d::Director::getInstance()->setDisplayStats(false);
     return YES;
 }
 
@@ -91,6 +93,7 @@ static AppDelegate s_sharedApplication;
      */
      //We don't need to call this method any more. It will interupt user defined game pause&resume logic
     /* cocos2d::Director::getInstance()->pause(); */
+    // cocos2d::Director::getInstance()->setDisplayStats(false);
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {

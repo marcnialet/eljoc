@@ -225,6 +225,7 @@ void Statistics::updatePieces()
         if(levelstats!=NULL)
         {
             this->layer->setLevelPieces(levelstats->getNumberOfPieces());
+            this->layer->setLevelPiecesByType(levelstats->piecesCounter);
         }
     }
 }
@@ -237,6 +238,7 @@ void Statistics::updateCombos()
         if(levelstats!=NULL)
         {
             this->layer->setLevelCombos(levelstats->getNumberOfCombos());
+            this->layer->setLevelCombosByType(levelstats->combosCounter);
         }
     }
 }
@@ -249,6 +251,7 @@ void Statistics::updateChains()
         if(levelstats!=NULL)
         {
             this->layer->setLevelChains(levelstats->getNumberOfChains());
+            this->layer->setLevelChainsByType(levelstats->chainsCounter);
         }
     }
 }
@@ -265,6 +268,7 @@ void Statistics::updateElapsedTime()
 {
     if(this->layer!=NULL && this->level!=NULL)
     {
+        this->layer->setGameElapsedTime(this->getElapsedTime());
         Statistics* levelstats = this->level->getStats();
         if(levelstats!=NULL)
         {

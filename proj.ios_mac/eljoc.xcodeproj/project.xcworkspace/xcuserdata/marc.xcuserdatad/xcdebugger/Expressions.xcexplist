@@ -49,6 +49,14 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "GameHUDLayer::setLevelElapsedTime(double):GameHUDLayer.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "(long)(elapsedtimeMs / 1000)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "GamePlay::getTimeTick():GamePlayScene.cpp">
       </ContextState>
    </ContextStates>
